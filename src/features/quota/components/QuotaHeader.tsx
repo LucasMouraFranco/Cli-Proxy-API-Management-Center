@@ -10,6 +10,8 @@ export type QuotaHeaderProps = {
   refreshing: boolean;
   disableControls: boolean;
   onRefreshAll: () => void;
+  showEmails: boolean;
+  onToggleShowEmails: () => void;
 };
 
 /**
@@ -20,8 +22,16 @@ export type QuotaHeaderProps = {
  * （标题 0ms → meta 70ms → 动作 140ms → tabs 210ms）。
  */
 export function QuotaHeader(props: QuotaHeaderProps) {
-  const { totalCount, loadedCount, attentionCount, refreshing, disableControls, onRefreshAll } =
-    props;
+  const {
+    totalCount,
+    loadedCount,
+    attentionCount,
+    refreshing,
+    disableControls,
+    onRefreshAll,
+    showEmails,
+    onToggleShowEmails,
+  } = props;
   const { t } = useTranslation();
   // 批量结果陆续落地时，「已加载」是页面上唯一滚动的数字
   const displayLoadedCount = useCountUp(loadedCount);
@@ -57,12 +67,20 @@ export function QuotaHeader(props: QuotaHeaderProps) {
       <div className={styles.actions} data-reveal>
         <button
           type="button"
+          className={styles.secondaryAction}
+          aria-pressed={showEmails}
+          onClick={onToggleShowEmails}
+        >
+          {t(showEmails ? 'quota_overview.hide_emails' : 'quota_overview.show_emails')}
+        </button>
+        <button
+          type="button"
           className={styles.primaryAction}
           onClick={onRefreshAll}
           disabled={disableControls || refreshing}
         >
           <IconRefreshCw size={14} className={refreshing ? styles.spinning : undefined} />
-          {t('quota_management.refresh_all_credentials')}
+          {t('quota_overview.refresh')}
         </button>
       </div>
     </header>

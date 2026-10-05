@@ -12,36 +12,7 @@ import { QuotaMeter } from '../../components/QuotaMeter';
 import { QuotaResetLabel } from '../../components/QuotaResetLabel';
 import { XAI_WEEKLY_ROW_ID, collectQuotaRowInstants, pickUrgentRowId } from '../../resetSchedule';
 import type { QuotaBodyProps } from '../../types';
-
-const formatUsdFromCents = (cents: number | null): string => {
-  if (cents === null) return '--';
-  return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency: 'USD',
-  }).format(cents / 100);
-};
-
-const formatXaiRemainingAmount = (billing: XaiBillingSummary): string => {
-  const remainingCents =
-    billing.monthlyLimitCents !== null && billing.includedUsedCents !== null
-      ? Math.max(0, billing.monthlyLimitCents - billing.includedUsedCents)
-      : null;
-  const remaining = formatUsdFromCents(remainingCents);
-  const limit = formatUsdFromCents(billing.monthlyLimitCents);
-  if (billing.monthlyLimitCents === null) return remaining;
-  return `${remaining} / ${limit}`;
-};
-
-const formatXaiOnDemandAmount = (billing: XaiBillingSummary): string => {
-  const remainingCents =
-    billing.onDemandCapCents !== null && billing.onDemandUsedCents !== null
-      ? Math.max(0, billing.onDemandCapCents - billing.onDemandUsedCents)
-      : null;
-  const remaining = formatUsdFromCents(remainingCents);
-  const cap = formatUsdFromCents(billing.onDemandCapCents);
-  if (billing.onDemandCapCents === null) return remaining;
-  return `${remaining} / ${cap}`;
-};
+import { formatUsdFromCents, formatXaiOnDemandAmount, formatXaiRemainingAmount } from './amounts';
 
 const formatXaiPercent = (value: number | null): string => {
   if (value === null) return '--';
