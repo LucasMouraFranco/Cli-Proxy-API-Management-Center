@@ -71,7 +71,9 @@ describe('credential token usage', () => {
   test('computes the share of input served from the cache', () => {
     const usage = normalizeCredentialTokenUsage(backendUsage)!;
     expect(cacheReadShare(usage)).toBeCloseTo(3_100_000 / (3_100_000 + 140_000 + 1800), 6);
-    expect(cacheReadShare({ ...usage, uncachedInputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 })).toBeNull();
+    expect(
+      cacheReadShare({ ...usage, uncachedInputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 })
+    ).toBeNull();
   });
 
   test('flags a recent burst of cache writes against the usual level', () => {
@@ -144,7 +146,9 @@ describe('CredentialCacheUsage rendering', () => {
 
   test('compact mode keeps the totals and drops the bars', async () => {
     const usage = normalizeCredentialTokenUsage(backendUsage)!;
-    const markup = renderToStaticMarkup(createElement(CredentialCacheUsage, { usage, compact: true }));
+    const markup = renderToStaticMarkup(
+      createElement(CredentialCacheUsage, { usage, compact: true })
+    );
     expect(markup).toContain('3.1M');
     expect(markup).not.toContain('role="img"');
   });
