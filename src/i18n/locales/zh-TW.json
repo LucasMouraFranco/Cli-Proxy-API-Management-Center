@@ -1412,6 +1412,8 @@
           "strategy_round_robin": "輪詢（Round Robin）",
           "strategy_weighted_round_robin": "加權輪詢（Weighted Round Robin）",
           "strategy_fill_first": "填充優先（Fill First）",
+          "strategy_soonest_reset": "最早重置優先",
+          "strategy_soonest_reset_hint": "把新對話發給每週額度最早重置的帳號，先用掉即將過期的額度。跳過已達 5 小時或每週上限的帳號；重置時間未知的帳號排在最後。",
           "session_affinity_ttl": "會話黏性 TTL",
           "force_model_prefix": "強制模型前綴",
           "force_model_prefix_desc": "未帶前綴的模型請求只使用無前綴憑證",
@@ -1421,9 +1423,7 @@
           "disable_cooling_desc": "全域停用驗證/模型失敗後的冷卻視窗",
           "session_affinity": "會話黏性路由",
           "ws_auth": "WebSocket 驗證",
-          "ws_auth_desc": "啟用 AI Studio WebSocket 連線驗證（oauth.providers.aistudio.ws-auth）",
-          "strategy_soonest_reset": "最早重置優先",
-          "strategy_soonest_reset_hint": "把新對話發給每週額度最早重置的帳號，先用掉即將過期的額度。跳過已達 5 小時或每週上限的帳號；重置時間未知的帳號排在最後。"
+          "ws_auth_desc": "啟用 AI Studio WebSocket 連線驗證（oauth.providers.aistudio.ws-auth）"
         },
         "quota": {
           "title": "配額回退",

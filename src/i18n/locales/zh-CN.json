@@ -1386,6 +1386,8 @@
           "strategy_round_robin": "轮询 (Round Robin)",
           "strategy_weighted_round_robin": "加权轮询 (Weighted Round Robin)",
           "strategy_fill_first": "填充优先 (Fill First)",
+          "strategy_soonest_reset": "最早重置优先",
+          "strategy_soonest_reset_hint": "把新会话发给每周额度最早重置的账号，先用掉即将过期的额度。跳过已达 5 小时或每周上限的账号；重置时间未知的账号排在最后。",
           "session_affinity_ttl": "会话粘性 TTL",
           "force_model_prefix": "强制模型前缀",
           "force_model_prefix_desc": "未带前缀的模型请求只使用无前缀凭据",
@@ -1395,9 +1397,7 @@
           "disable_cooling_desc": "全局禁用认证/模型失败后的冷却窗口",
           "session_affinity": "会话粘性路由",
           "ws_auth": "WebSocket 认证",
-          "ws_auth_desc": "启用 AI Studio WebSocket 连接认证（oauth.providers.aistudio.ws-auth）",
-          "strategy_soonest_reset": "最早重置优先",
-          "strategy_soonest_reset_hint": "把新会话发给每周额度最早重置的账号，先用掉即将过期的额度。跳过已达 5 小时或每周上限的账号；重置时间未知的账号排在最后。"
+          "ws_auth_desc": "启用 AI Studio WebSocket 连接认证（oauth.providers.aistudio.ws-auth）"
         },
         "quota": {
           "title": "配额回退",

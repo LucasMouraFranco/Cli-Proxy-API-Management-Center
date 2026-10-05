@@ -1391,6 +1391,8 @@
           "strategy_round_robin": "По кругу",
           "strategy_weighted_round_robin": "Взвешенный круговой алгоритм",
           "strategy_fill_first": "Сначала заполнить",
+          "strategy_soonest_reset": "Ближайший сброс",
+          "strategy_soonest_reset_hint": "Отправляет новые сессии на аккаунт, чья недельная квота сбросится раньше всех, чтобы истекающая квота тратилась первой. Пропускает аккаунты на 5-часовом или недельном лимите; аккаунты с неизвестным сбросом идут последними.",
           "session_affinity_ttl": "TTL привязки сессии",
           "force_model_prefix": "Принудительный префикс модели",
           "force_model_prefix_desc": "Запросы к моделям без префикса используют только учётные данные без префикса",
@@ -1400,9 +1402,7 @@
           "disable_cooling_desc": "Глобально отключить окна охлаждения auth/model после ошибок",
           "session_affinity": "Маршрутизация с привязкой к сессии",
           "ws_auth": "Аутентификация WebSocket",
-          "ws_auth_desc": "Аутентификация WebSocket AI Studio (oauth.providers.aistudio.ws-auth)",
-          "strategy_soonest_reset": "Ближайший сброс",
-          "strategy_soonest_reset_hint": "Отправляет новые сессии на аккаунт, чья недельная квота сбросится раньше всех, чтобы истекающая квота тратилась первой. Пропускает аккаунты на 5-часовом или недельном лимите; аккаунты с неизвестным сбросом идут последними."
+          "ws_auth_desc": "Аутентификация WebSocket AI Studio (oauth.providers.aistudio.ws-auth)"
         },
         "quota": {
           "title": "Резерв по квоте",
