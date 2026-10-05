@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "mock:backend": "bun scripts/mock-backend/server.ts",
     "test": "bun test",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "verify": "bun run test && bun run lint && bun run build",
