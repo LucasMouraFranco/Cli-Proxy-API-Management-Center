@@ -1420,7 +1420,8 @@
           "disable_cooling_desc": "全域停用驗證/模型失敗後的冷卻視窗",
           "session_affinity": "會話黏性路由",
           "ws_auth": "WebSocket 驗證",
-          "ws_auth_desc": "啟用 AI Studio WebSocket 連線驗證（oauth.providers.aistudio.ws-auth）"
+          "ws_auth_desc": "啟用 AI Studio WebSocket 連線驗證（oauth.providers.aistudio.ws-auth）",
+          "session_affinity_desc": "讓每個對話固定在同一帳號上，保持該帳號的提示快取命中。預設開啟；關閉後每個請求都會在帳號間分配。"
         },
         "quota": {
           "title": "配額回退",
@@ -2249,5 +2250,16 @@
     "unavailable": "重置暫不可用。",
     "rate_limited": "請求過於頻繁。",
     "auth_error": "授權遭拒。"
+  },
+  "cache_usage": {
+    "title": "提示快取",
+    "read": "讀取",
+    "write": "寫入",
+    "read_share": "快取命中 {{percent}}%",
+    "read_share_hint": "自代理啟動以來由提示快取提供的輸入 token 佔比",
+    "bars_label": "最近 3 小時每 10 分鐘的快取寫入",
+    "bar_title": "{{time}}：快取寫入 {{tokens}} token",
+    "spike": "{{time}} 快取寫入激增：{{tokens}} token，約為平時的 {{ratio}} 倍。可能有對話切換到了這個帳號。",
+    "spike_idle": "{{time}} 快取寫入激增：閒置帳號寫入 {{tokens}} token。可能有對話切換到了這個帳號。"
   }
 }

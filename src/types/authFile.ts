@@ -4,6 +4,7 @@
  */
 
 import type { RecentRequestBucket } from '@/utils/recentRequests';
+import type { CredentialTokenUsage } from '@/utils/tokenUsage';
 
 export type AuthFileType =
   | 'qwen'
@@ -72,6 +73,10 @@ export interface AuthFileItem {
   failureCount?: number;
   recent_requests?: RecentRequestBucket[];
   recentRequests?: RecentRequestBucket[];
+  /** Raw backend token totals; read the normalized `tokenUsage` instead. */
+  token_usage?: unknown;
+  /** Token usage since the proxy started, including prompt-cache reads and writes. */
+  tokenUsage?: CredentialTokenUsage;
   /** Absent on older servers. Never interpreted as credential health. */
   cooldownSnapshot?: AuthFileCooldownSnapshot;
   [key: string]: unknown;

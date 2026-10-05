@@ -15,6 +15,7 @@ import {
   normalizeUsageTotal,
 } from '@/utils/recentRequests';
 import { parseTimestampMs } from '@/utils/timestamp';
+import { normalizeCredentialTokenUsage } from '@/utils/tokenUsage';
 import { normalizeAuthFileCooldowns, normalizeCooldownTimestamp } from './authFileCooldowns';
 
 type AuthFileStatusResponse = { status: string; disabled: boolean };
@@ -279,6 +280,7 @@ const normalizeAuthFileEntry = (
     recentRequests: normalizeRecentRequestBuckets(entry.recent_requests ?? entry.recentRequests),
     successCount: normalizeUsageTotal(entry.success),
     failureCount: normalizeUsageTotal(entry.failed),
+    tokenUsage: normalizeCredentialTokenUsage(entry.token_usage ?? entry.tokenUsage),
     ...(statusMessage ? { statusMessage } : {}),
     ...(modified > 0 ? { modified } : {}),
     priority,

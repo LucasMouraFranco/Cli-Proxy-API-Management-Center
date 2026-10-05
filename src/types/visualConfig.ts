@@ -293,7 +293,8 @@ export const DEFAULT_VISUAL_VALUES: VisualConfigValues = {
   quotaSwitchPreviewModel: false,
   quotaAntigravityCredits: false,
   routingStrategy: 'round-robin',
-  routingSessionAffinity: false,
+  // CLIProxyAPI fork default: session affinity is on unless explicitly disabled.
+  routingSessionAffinity: true,
   routingSessionAffinityTTL: '',
   wsAuth: true,
   antigravitySensitiveWords: [],

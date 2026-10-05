@@ -1532,7 +1532,9 @@ function parseVisualValuesFromYaml(yamlContent: string): VisualConfigValues {
     quotaAntigravityCredits: Boolean(antigravity?.['antigravity-credits'] ?? false),
 
     routingStrategy: parseRoutingStrategy(routing?.strategy),
-    routingSessionAffinity: Boolean(routing?.['session-affinity']),
+    routingSessionAffinity: Boolean(
+      routing?.['session-affinity'] ?? DEFAULT_VISUAL_VALUES.routingSessionAffinity
+    ),
     routingSessionAffinityTTL:
       typeof routing?.['session-affinity-ttl'] === 'string' ? routing['session-affinity-ttl'] : '',
 
