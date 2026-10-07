@@ -9,6 +9,10 @@ import {
 export type QuotaUiState = {
   tab?: QuotaTabId;
   sortMode?: QuotaSortMode;
+  /** Account emails are masked unless the user asks to see them. */
+  showEmails?: boolean;
+  /** Extra weekly buckets (Opus, Sonnet, code review) stay hidden unless asked for. */
+  showExtraBuckets?: boolean;
 };
 
 const QUOTA_UI_STATE_KEY = 'quotaPage.uiState';
@@ -32,6 +36,8 @@ export const readQuotaUiState = (): QuotaUiState | null => {
     return {
       tab: isQuotaTabId(parsed.tab) ? parsed.tab : undefined,
       sortMode: isQuotaSortMode(parsed.sortMode) ? parsed.sortMode : undefined,
+      showEmails: parsed.showEmails === true ? true : undefined,
+      showExtraBuckets: parsed.showExtraBuckets === true ? true : undefined,
     };
   } catch {
     return null;
