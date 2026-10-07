@@ -215,8 +215,19 @@ export const readAuthFileDisableCooling = (value: Record<string, unknown>): bool
 export const supportsAuthFileWebsockets = (providerKey: string): boolean =>
   AUTH_FILE_WEBSOCKET_PROVIDERS.has(normalizeProviderKey(providerKey));
 
-export const readAuthFileWebsockets = (value: Record<string, unknown>): boolean =>
-  parseDisableCoolingValue(value.websockets ?? value.websocket) ?? false;
+/**
+ * The CLIProxyAPI fork routes Codex OAuth credentials (every Codex auth file) over the
+ * upstream websocket transport unless the file sets `websockets: false`.
+ */
+export const authFileWebsocketsDefault = (providerKey: string): boolean =>
+  normalizeProviderKey(providerKey) === 'codex';
+
+export const readAuthFileWebsockets = (
+  value: Record<string, unknown>,
+  providerKey: string = String(value.type ?? value.provider ?? '')
+): boolean =>
+  parseDisableCoolingValue(value.websockets ?? value.websocket) ??
+  authFileWebsocketsDefault(providerKey);
 
 export const applyAuthFileWebsockets = (
   value: Record<string, unknown>,
