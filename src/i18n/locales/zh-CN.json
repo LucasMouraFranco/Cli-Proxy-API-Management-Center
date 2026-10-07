@@ -1394,7 +1394,8 @@
           "disable_cooling_desc": "全局禁用认证/模型失败后的冷却窗口",
           "session_affinity": "会话粘性路由",
           "ws_auth": "WebSocket 认证",
-          "ws_auth_desc": "启用 AI Studio WebSocket 连接认证（oauth.providers.aistudio.ws-auth）"
+          "ws_auth_desc": "启用 AI Studio WebSocket 连接认证（oauth.providers.aistudio.ws-auth）",
+          "session_affinity_desc": "让每个会话固定在同一账号上，保持该账号的提示缓存命中。默认开启；关闭后每个请求都会在账号间分配。"
         },
         "quota": {
           "title": "配额回退",
@@ -2223,5 +2224,16 @@
     "unavailable": "重置暂不可用。",
     "rate_limited": "请求过于频繁。",
     "auth_error": "授权被拒绝。"
+  },
+  "cache_usage": {
+    "title": "提示缓存",
+    "read": "读取",
+    "write": "写入",
+    "read_share": "缓存命中 {{percent}}%",
+    "read_share_hint": "自代理启动以来由提示缓存提供的输入 token 占比",
+    "bars_label": "最近 3 小时每 10 分钟的缓存写入",
+    "bar_title": "{{time}}：缓存写入 {{tokens}} token",
+    "spike": "{{time}} 缓存写入激增：{{tokens}} token，约为平时的 {{ratio}} 倍。可能有会话切换到了这个账号。",
+    "spike_idle": "{{time}} 缓存写入激增：空闲账号写入 {{tokens}} token。可能有会话切换到了这个账号。"
   }
 }

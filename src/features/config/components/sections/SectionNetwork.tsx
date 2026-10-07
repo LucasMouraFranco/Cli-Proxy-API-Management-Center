@@ -275,6 +275,7 @@ export function SectionNetwork({
           <FieldAnchor fieldId="routingSessionAffinity">
             <ToggleRow
               title={t('config_management.visual.sections.network.session_affinity')}
+              description={t('config_management.visual.sections.network.session_affinity_desc')}
               checked={values.routingSessionAffinity}
               disabled={disabled}
               onChange={(routingSessionAffinity) => onChange({ routingSessionAffinity })}

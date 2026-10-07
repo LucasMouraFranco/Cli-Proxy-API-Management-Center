@@ -104,7 +104,7 @@ describe('v8 visual config contract', () => {
     ['force prefix', { forceModelPrefix: true }, { 'force-model-prefix': true }],
     ['cooling', { disableCooling: true }, { cooldown: { 'disable-cooling': true } }],
     ['strategy', { routingStrategy: 'fill-first' }, { strategy: 'fill-first' }],
-    ['session affinity', { routingSessionAffinity: true }, { 'session-affinity': true }],
+    ['session affinity', { routingSessionAffinity: false }, { 'session-affinity': false }],
     ['affinity TTL', { routingSessionAffinityTTL: '1h' }, { 'session-affinity-ttl': '1h' }],
   ];
 

@@ -1396,7 +1396,8 @@
           "disable_cooling_desc": "Globally disable auth/model cooldown windows after failures",
           "session_affinity": "Session Affinity Routing",
           "ws_auth": "WebSocket Authentication",
-          "ws_auth_desc": "Require authentication for AI Studio WebSocket connections (oauth.providers.aistudio.ws-auth)"
+          "ws_auth_desc": "Require authentication for AI Studio WebSocket connections (oauth.providers.aistudio.ws-auth)",
+          "session_affinity_desc": "Keep each conversation on one account so its per-account prompt cache stays warm. On by default; turn off to spread every request across accounts."
         },
         "quota": {
           "title": "Quota Fallback",
@@ -2225,5 +2226,16 @@
     "unavailable": "Resets are currently unavailable.",
     "rate_limited": "Request rate limited.",
     "auth_error": "Authorization was refused."
+  },
+  "cache_usage": {
+    "title": "Prompt cache",
+    "read": "Read",
+    "write": "Write",
+    "read_share": "{{percent}}% cached",
+    "read_share_hint": "Share of input tokens served from the prompt cache since the proxy started",
+    "bars_label": "Cache writes per 10 minutes over the last 3 hours",
+    "bar_title": "{{time}}: {{tokens}} cache-write tokens",
+    "spike": "Cache-write spike at {{time}}: {{tokens}} tokens, about {{ratio}}× the usual. A conversation probably moved to this account.",
+    "spike_idle": "Cache-write spike at {{time}}: {{tokens}} tokens on a quiet account. A conversation probably moved to this account."
   }
 }

@@ -14,6 +14,7 @@ import {
   IconTrash2,
 } from '@/components/ui/icons';
 import { ProviderStatusBar } from '@/components/providers/ProviderStatusBar';
+import { CredentialCacheUsage } from '@/components/usage/CredentialCacheUsage';
 import type { AuthFileItem } from '@/types';
 import { statusBarDataFromRecentRequests } from '@/utils/recentRequests';
 import { formatFileSize } from '@/utils/format';
@@ -215,6 +216,8 @@ export function AuthFileCard(props: AuthFileCardProps) {
         </div>
         <ProviderStatusBar statusData={statusData} styles={styles} />
       </div>
+
+      {file.tokenUsage && <CredentialCacheUsage usage={file.tokenUsage} />}
 
       <div className={styles.metaRow}>
         <span title={t('auth_files.file_size')}>{file.size ? formatFileSize(file.size) : '-'}</span>
