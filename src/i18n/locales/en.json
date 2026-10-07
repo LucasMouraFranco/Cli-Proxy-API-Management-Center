@@ -1389,7 +1389,7 @@
           "strategy_weighted_round_robin": "Weighted Round Robin",
           "strategy_fill_first": "Fill First",
           "strategy_soonest_reset": "Soonest Reset",
-          "strategy_soonest_reset_hint": "Sends new sessions to the account whose weekly quota resets soonest, so expiring quota is used first. Skips accounts at their 5-hour or weekly limit; accounts with an unknown reset go last.",
+          "strategy_soonest_reset_hint": "Sends new sessions to the account whose weekly quota resets soonest, so expiring quota is used first. Skips accounts at their 5-hour or weekly limit. An account it has not heard from yet is tried once first, to learn its reset.",
           "session_affinity_ttl": "Session Affinity TTL",
           "force_model_prefix": "Force Model Prefix",
           "force_model_prefix_desc": "Unprefixed model requests only use credentials without prefix",

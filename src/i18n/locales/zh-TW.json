@@ -1413,7 +1413,7 @@
           "strategy_weighted_round_robin": "加權輪詢（Weighted Round Robin）",
           "strategy_fill_first": "填充優先（Fill First）",
           "strategy_soonest_reset": "最早重置優先",
-          "strategy_soonest_reset_hint": "把新對話發給每週額度最早重置的帳號，先用掉即將過期的額度。跳過已達 5 小時或每週上限的帳號；重置時間未知的帳號排在最後。",
+          "strategy_soonest_reset_hint": "把新對話發給每週額度最早重置的帳號，先用掉即將過期的額度。跳過已達 5 小時或每週上限的帳號。尚未收到回應的帳號會先試用一次，以得知其重置時間。",
           "session_affinity_ttl": "會話黏性 TTL",
           "force_model_prefix": "強制模型前綴",
           "force_model_prefix_desc": "未帶前綴的模型請求只使用無前綴憑證",
