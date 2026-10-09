@@ -1613,6 +1613,8 @@
     "hide_extra_buckets_label": "Скрыть Opus и другие недельные лимиты",
     "show_emails": "Показать почту",
     "hide_emails": "Скрыть почту",
+    "reveal_email": "Нажмите, чтобы показать почту",
+    "hide_email": "Нажмите, чтобы скрыть почту",
     "refresh": "Обновить",
     "renews": "продление {{date}}",
     "available": "доступно",

@@ -1631,6 +1631,8 @@
     "hide_extra_buckets_label": "隱藏 Opus 等其他每週額度",
     "show_emails": "顯示電子郵件",
     "hide_emails": "隱藏電子郵件",
+    "reveal_email": "點擊顯示電子郵件",
+    "hide_email": "點擊隱藏電子郵件",
     "refresh": "重新整理",
     "renews": "{{date}} 續訂",
     "available": "可用",

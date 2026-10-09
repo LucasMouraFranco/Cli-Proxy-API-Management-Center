@@ -544,15 +544,14 @@ export function QuotaPage() {
                 <div className={styles.rows}>
                   {group.items.map((entry) => {
                     const quota = getQuota(entry);
-                    const label = getQuotaAccountLabel(entry.file);
                     return (
                       <QuotaAccountRow
                         key={`${entry.type}:${getQuotaCacheKey(entry.file)}`}
                         entry={entry}
                         quota={quota}
                         model={buildQuotaRowModel(t, entry.type, quota)}
-                        displayName={displayNameFor(label.name)}
-                        displayDetail={label.detail && displayNameFor(label.detail)}
+                        label={getQuotaAccountLabel(entry.file)}
+                        showEmails={showEmails}
                         nowMs={nowMs}
                         isNextPick={isNextPick(entry)}
                         showExtraBuckets={showExtraBuckets}
