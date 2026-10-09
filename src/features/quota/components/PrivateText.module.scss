@@ -1,8 +1,14 @@
+/*
+ * The row classes passed in clip overflow (for ellipsis), which would cut the glow
+ * into a hard rectangle. Both layers get padding for the glow to fade into, and
+ * matching negative margins so the text and layout stay exactly where they were.
+ */
 .private {
   /* Fit the text so stretch alignment does not widen the click target. */
   width: fit-content;
   max-width: 100%;
-  padding: 0;
+  padding: 6px 10px;
+  margin: -6px -10px;
   border: 0;
   background: none;
   text-align: left;
@@ -10,22 +16,28 @@
 
   &:focus-visible {
     outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+    outline-offset: -2px;
   }
 }
 
-/* Blur the inner text, not the button, so the focus outline stays sharp. */
+/* Frosted glow: the letters are drawn only as a soft shadow in their own color. */
 .privateText {
   display: block;
+  padding: 6px 10px;
+  margin: -6px -10px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  filter: blur(4px);
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 7px currentColor;
   user-select: none;
-  transition: filter 120ms ease;
+  transition:
+    text-shadow 160ms ease,
+    -webkit-text-fill-color 160ms ease;
 
   .private[data-revealed] & {
-    filter: none;
+    -webkit-text-fill-color: currentColor;
+    text-shadow: none;
     user-select: text;
   }
 
