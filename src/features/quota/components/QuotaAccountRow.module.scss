@@ -43,8 +43,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: $font-mono;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 650;
   color: var(--text-primary);
 }
@@ -59,6 +58,14 @@
   font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--text-secondary);
 }
 
 .subline {
