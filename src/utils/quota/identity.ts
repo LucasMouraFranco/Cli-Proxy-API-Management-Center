@@ -22,6 +22,22 @@ export function getQuotaDisplayName(file: AuthFileItem): string {
   return identity ? `${file.name} · ${identity}` : file.name;
 }
 
+export interface QuotaAccountLabel {
+  name: string;
+  /** What a nickname replaced, so the account stays identifiable; null when there is none. */
+  detail: string | null;
+}
+
+/**
+ * Name an account by its note (a nickname set on the Auth Files page), then its email,
+ * then its file name. Like getQuotaDisplayName, this never reads `account`.
+ */
+export function getQuotaAccountLabel(file: AuthFileItem): QuotaAccountLabel {
+  const fallback = file.email?.trim() || getQuotaDisplayName(file);
+  const note = typeof file.note === 'string' ? file.note.trim() : '';
+  return note ? { name: note, detail: fallback } : { name: fallback, detail: null };
+}
+
 /** Resolve a cache identity back to the physical filename used by file mutations. */
 export function getQuotaCacheFileName(key: string): string {
   const separatorIndex = key.indexOf(QUOTA_IDENTITY_SEPARATOR);

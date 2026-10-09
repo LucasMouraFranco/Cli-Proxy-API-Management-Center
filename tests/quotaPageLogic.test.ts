@@ -98,7 +98,14 @@ describe('filterEntriesBySearch', () => {
     file('personal.json', 'codex', { email: 'Alice@Example.com' }),
     file('work.json', 'claude', { email: 'Alice@Example.com' }),
     file('private.json', 'codex', { account: 'secret-api-key' }),
+    file('nicknamed.json', 'claude', { note: 'Side Project' }),
   ]);
+
+  test('matches the nickname set in the auth file note', () => {
+    expect(filterEntriesBySearch(entries, 'side proj').map(({ file }) => file.name)).toEqual([
+      'nicknamed.json',
+    ]);
+  });
 
   test('ignores case and surrounding whitespace when matching filenames or emails', () => {
     expect(filterEntriesBySearch(entries, ' CODEX-A ').map(({ file }) => file.name)).toEqual([

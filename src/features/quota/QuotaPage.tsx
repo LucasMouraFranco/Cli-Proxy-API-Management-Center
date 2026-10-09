@@ -24,7 +24,7 @@ import { useNow } from '@/hooks/useNow';
 import { useRevealGroup } from '@/hooks/motion';
 import { useAuthStore, useQuotaStore, useThemeStore } from '@/stores';
 import type { AuthFileItem, ResolvedTheme } from '@/types';
-import { getQuotaCacheKey, getQuotaDisplayName } from '@/utils/quota/identity';
+import { getQuotaAccountLabel, getQuotaCacheKey } from '@/utils/quota/identity';
 import { ProviderTabs } from '@/features/authFiles/components/ProviderTabs';
 import { getTypeLabel } from '@/features/authFiles/constants';
 import { QuotaHeader } from './components/QuotaHeader';
@@ -379,7 +379,7 @@ export function QuotaPage() {
         (entry) =>
           entry.type === provider && credentialMatchesPreviewAuth(entry.file, preview.authId)
       );
-      return displayNameFor(match ? getQuotaDisplayName(match.file) : preview.authId);
+      return displayNameFor(match ? getQuotaAccountLabel(match.file).name : preview.authId);
     },
     [displayNameFor, entries, previewFor]
   );
@@ -544,13 +544,15 @@ export function QuotaPage() {
                 <div className={styles.rows}>
                   {group.items.map((entry) => {
                     const quota = getQuota(entry);
+                    const label = getQuotaAccountLabel(entry.file);
                     return (
                       <QuotaAccountRow
                         key={`${entry.type}:${getQuotaCacheKey(entry.file)}`}
                         entry={entry}
                         quota={quota}
                         model={buildQuotaRowModel(t, entry.type, quota)}
-                        displayName={displayNameFor(getQuotaDisplayName(entry.file))}
+                        displayName={displayNameFor(label.name)}
+                        displayDetail={label.detail && displayNameFor(label.detail)}
                         nowMs={nowMs}
                         isNextPick={isNextPick(entry)}
                         showExtraBuckets={showExtraBuckets}

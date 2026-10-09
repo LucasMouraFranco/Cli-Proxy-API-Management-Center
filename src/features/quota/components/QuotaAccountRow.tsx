@@ -34,6 +34,8 @@ export interface QuotaAccountRowProps {
   quota?: QuotaCardState;
   model: QuotaRowModel | null;
   displayName: string;
+  /** Shown under a nickname so the account's email stays visible. */
+  displayDetail: string | null;
   nowMs: number;
   isNextPick: boolean;
   showExtraBuckets: boolean;
@@ -175,6 +177,7 @@ export function QuotaAccountRow(props: QuotaAccountRowProps) {
     quota,
     model,
     displayName,
+    displayDetail,
     nowMs,
     isNextPick,
     showExtraBuckets,
@@ -247,6 +250,11 @@ export function QuotaAccountRow(props: QuotaAccountRowProps) {
             </span>
           )}
         </div>
+        {displayDetail && (
+          <div className={styles.detail} title={displayDetail}>
+            {displayDetail}
+          </div>
+        )}
         {(subline.length > 0 || renewal) && (
           <div className={styles.subline} title={sublineTitle}>
             {subline.length > 0 && <span className={styles.plan}>{subline.join(' · ')}</span>}
