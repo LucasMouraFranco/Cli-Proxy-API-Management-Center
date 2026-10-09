@@ -275,11 +275,12 @@ describe('quota overview rendering', () => {
     expect(html).not.toContain('tooling@lumen.dev');
   });
 
-  test('account rows show the masked name, the next-pick badge and keep the Codex reset', async () => {
+  test('account rows show the private name, the next-pick badge and keep the Codex reset', async () => {
     // The row binds the QuotaBody class contract at load, which bun's stubbed
     // stylesheets cannot satisfy, so its wiring is checked in source.
     const source = await Bun.file('src/features/quota/components/QuotaAccountRow.tsx').text();
-    expect(source).toContain('title={displayName}');
+    expect(source).toContain('<PrivateText text={label.name}');
+    expect(source).toContain('<PrivateText text={label.detail}');
     expect(source).toContain("t('quota_overview.next_pick')");
     expect(source).toContain('adapter.canResetQuota?.(quota)');
     expect(source).toContain("t('codex_quota.reset_button')");

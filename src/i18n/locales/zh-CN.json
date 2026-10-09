@@ -1605,6 +1605,8 @@
     "hide_extra_buckets_label": "隐藏 Opus 等其他每周额度",
     "show_emails": "显示邮箱",
     "hide_emails": "隐藏邮箱",
+    "reveal_email": "点击显示邮箱",
+    "hide_email": "点击隐藏邮箱",
     "refresh": "刷新",
     "renews": "{{date}} 续订",
     "available": "可用",

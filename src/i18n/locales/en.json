@@ -1608,6 +1608,8 @@
     "hide_extra_buckets_label": "Hide the Opus and other weekly buckets",
     "show_emails": "Show emails",
     "hide_emails": "Hide emails",
+    "reveal_email": "Click to show email",
+    "hide_email": "Click to hide email",
     "refresh": "Refresh",
     "renews": "renews {{date}}",
     "available": "available",

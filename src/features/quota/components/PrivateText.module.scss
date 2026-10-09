@@ -1,0 +1,35 @@
+.private {
+  /* Fit the text so stretch alignment does not widen the click target. */
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+/* Blur the inner text, not the button, so the focus outline stays sharp. */
+.privateText {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  filter: blur(4px);
+  user-select: none;
+  transition: filter 120ms ease;
+
+  .private[data-revealed] & {
+    filter: none;
+    user-select: text;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

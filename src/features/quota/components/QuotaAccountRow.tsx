@@ -16,6 +16,7 @@ import {
   resolveQuotaErrorMessage,
   resolveResetMs,
 } from '@/utils/quota';
+import type { QuotaAccountLabel } from '@/utils/quota/identity';
 import { bindQuotaClasses } from '../types';
 import { QUOTA_ADAPTERS, type QuotaCardState } from '../providers';
 import { isQuotaRefreshDisabled, type QuotaFileEntry } from '../logic';
@@ -23,6 +24,7 @@ import { useClaudeResetGrants } from '../providers/claude/ClaudeResetGrants';
 import { getCodexPlanLabel } from '../providers/codex/planLabel';
 import { formatXaiOnDemandAmount, formatXaiRemainingAmount } from '../providers/xai/amounts';
 import { toneForRemaining, type QuotaMetric, type QuotaRowModel } from '../quotaOverview';
+import { PrivateText } from './PrivateText';
 import bodyStyles from './QuotaBody.module.scss';
 import styles from './QuotaAccountRow.module.scss';
 
@@ -33,9 +35,9 @@ export interface QuotaAccountRowProps {
   entry: QuotaFileEntry;
   quota?: QuotaCardState;
   model: QuotaRowModel | null;
-  displayName: string;
-  /** Shown under a nickname so the account's email stays visible. */
-  displayDetail: string | null;
+  label: QuotaAccountLabel;
+  /** "Show emails" is on: render emails as plain text instead of blurred. */
+  showEmails: boolean;
   nowMs: number;
   isNextPick: boolean;
   showExtraBuckets: boolean;
@@ -176,8 +178,8 @@ export function QuotaAccountRow(props: QuotaAccountRowProps) {
     entry,
     quota,
     model,
-    displayName,
-    displayDetail,
+    label,
+    showEmails,
     nowMs,
     isNextPick,
     showExtraBuckets,
@@ -241,19 +243,15 @@ export function QuotaAccountRow(props: QuotaAccountRowProps) {
     <article className={styles.row} data-next-pick={isNextPick || undefined}>
       <div className={styles.identity}>
         <div className={styles.nameLine}>
-          <span className={styles.name} title={displayName}>
-            {displayName}
-          </span>
+          <PrivateText text={label.name} className={styles.name} showEmails={showEmails} />
           {isNextPick && (
             <span className={styles.nextBadge} title={t('quota_overview.next_pick_hint')}>
               {t('quota_overview.next_pick')}
             </span>
           )}
         </div>
-        {displayDetail && (
-          <div className={styles.detail} title={displayDetail}>
-            {displayDetail}
-          </div>
+        {label.detail && (
+          <PrivateText text={label.detail} className={styles.detail} showEmails={showEmails} />
         )}
         {(subline.length > 0 || renewal) && (
           <div className={styles.subline} title={sublineTitle}>
