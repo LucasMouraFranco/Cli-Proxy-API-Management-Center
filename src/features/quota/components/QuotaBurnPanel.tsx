@@ -66,8 +66,9 @@ export function QuotaBurnPanel({ type, accounts, nowMs, style }: QuotaBurnPanelP
 
   const [settings, setSettings] = useState<QuotaBurnUiState>(() => readQuotaUiState()?.burn ?? {});
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const manualRate = settings.manualRates?.[type];
   const [rateDraft, setRateDraft] = useState(() =>
-    settings.manualRate === undefined ? '' : String(settings.manualRate)
+    manualRate === undefined ? '' : String(manualRate)
   );
   const [hoverMs, setHoverMs] = useState<number | null>(null);
 
@@ -80,6 +81,9 @@ export function QuotaBurnPanel({ type, accounts, nowMs, style }: QuotaBurnPanelP
     setSettings(next);
     writeQuotaUiState({ burn: next });
   };
+  // Each provider drains at its own pace, so a typed rate belongs to this provider only.
+  const setManualRate = (rate: number | undefined) =>
+    updateSettings({ manualRates: { ...settings.manualRates, [type]: rate } });
 
   const forecast = useMemo(
     () =>
@@ -88,17 +92,17 @@ export function QuotaBurnPanel({ type, accounts, nowMs, style }: QuotaBurnPanelP
         nowMs,
         lookback,
         horizonDays,
-        manualRatePerHour: settings.manualRate ?? null,
+        manualRatePerHour: manualRate ?? null,
       }),
-    [accounts, nowMs, lookback, horizonDays, settings.manualRate]
+    [accounts, nowMs, lookback, horizonDays, manualRate]
   );
   // Measured separately so the settings can show it while a manual rate is in use.
   const measuredRate = useMemo(
     () =>
-      settings.manualRate === undefined
+      manualRate === undefined
         ? forecast.ratePerHour
         : buildBurnForecast({ accounts, nowMs, lookback, horizonDays }).ratePerHour,
-    [accounts, nowMs, lookback, horizonDays, settings.manualRate, forecast.ratePerHour]
+    [accounts, nowMs, lookback, horizonDays, manualRate, forecast.ratePerHour]
   );
 
   if (forecast.capacity === 0) return null;
@@ -350,21 +354,20 @@ export function QuotaBurnPanel({ type, accounts, nowMs, style }: QuotaBurnPanelP
                       const text = event.target.value;
                       setRateDraft(text);
                       const value = Number(text);
-                      updateSettings({
-                        manualRate:
-                          text.trim() !== '' && Number.isFinite(value) && value >= 0
-                            ? value
-                            : undefined,
-                      });
+                      setManualRate(
+                        text.trim() !== '' && Number.isFinite(value) && value >= 0
+                          ? value
+                          : undefined
+                      );
                     }}
                   />
-                  {settings.manualRate !== undefined && (
+                  {manualRate !== undefined && (
                     <Button
                       variant="secondary"
                       size="sm"
                       onClick={() => {
                         setRateDraft('');
-                        updateSettings({ manualRate: undefined });
+                        setManualRate(undefined);
                       }}
                     >
                       {t('quota_burn.use_measured')}

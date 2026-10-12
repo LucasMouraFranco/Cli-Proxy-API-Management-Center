@@ -80,19 +80,21 @@ describe('quota ui state', () => {
 
   test('keeps burn forecast settings and drops invalid ones', () => {
     writeQuotaUiState({
-      burn: { collapsed: true, horizonDays: 14, lookback: '3d', manualRate: 2.5 },
+      burn: { collapsed: true, horizonDays: 14, lookback: '3d', manualRates: { claude: 2.5 } },
     });
     writeQuotaUiState({ tab: 'claude' });
     expect(readQuotaUiState()?.burn).toEqual({
       collapsed: true,
       horizonDays: 14,
       lookback: '3d',
-      manualRate: 2.5,
+      manualRates: { claude: 2.5 },
     });
 
     storage.setItem(
       KEY,
-      JSON.stringify({ burn: { horizonDays: 5, lookback: '1h', manualRate: -1 } })
+      JSON.stringify({
+        burn: { horizonDays: 5, lookback: '1h', manualRates: { claude: -1, nope: 2 } },
+      })
     );
     expect(readQuotaUiState()?.burn).toEqual({});
   });

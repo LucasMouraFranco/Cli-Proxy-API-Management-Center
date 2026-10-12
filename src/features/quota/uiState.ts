@@ -10,14 +10,15 @@ import {
   type BurnHorizonDays,
   type BurnLookback,
 } from './burnForecast';
+import type { QuotaProviderType } from './providers/types';
 
 /** Burn forecast panel preferences; written as a whole object. */
 export type QuotaBurnUiState = {
   collapsed?: boolean;
   horizonDays?: BurnHorizonDays;
   lookback?: BurnLookback;
-  /** Percent per hour typed by the user; absent means use the measured rate. */
-  manualRate?: number;
+  /** Percent per hour typed by the user, per provider; absent means use the measured rate. */
+  manualRates?: Partial<Record<QuotaProviderType, number>>;
 };
 
 /** 额度页 UI 偏好：会话级持久化（sessionStorage），跨会话不携带。 */
@@ -45,7 +46,15 @@ export const isQuotaSortMode = (value: unknown): value is QuotaSortMode =>
 const readBurnUiState = (value: unknown): QuotaBurnUiState | undefined => {
   if (!value || typeof value !== 'object') return undefined;
   const burn = value as Record<string, unknown>;
-  const manualRate = burn.manualRate;
+  const manualRates: Partial<Record<QuotaProviderType, number>> = {};
+  if (burn.manualRates && typeof burn.manualRates === 'object') {
+    Object.entries(burn.manualRates as Record<string, unknown>).forEach(([type, rate]) => {
+      if (!(QUOTA_TAB_ORDER as readonly string[]).includes(type)) return;
+      if (typeof rate === 'number' && Number.isFinite(rate) && rate >= 0) {
+        manualRates[type as QuotaProviderType] = rate;
+      }
+    });
+  }
   return {
     collapsed: burn.collapsed === true ? true : undefined,
     horizonDays: (BURN_HORIZON_DAYS as readonly unknown[]).includes(burn.horizonDays)
@@ -54,10 +63,7 @@ const readBurnUiState = (value: unknown): QuotaBurnUiState | undefined => {
     lookback: (BURN_LOOKBACKS as readonly unknown[]).includes(burn.lookback)
       ? (burn.lookback as BurnLookback)
       : undefined,
-    manualRate:
-      typeof manualRate === 'number' && Number.isFinite(manualRate) && manualRate >= 0
-        ? manualRate
-        : undefined,
+    manualRates: Object.keys(manualRates).length > 0 ? manualRates : undefined,
   };
 };
 

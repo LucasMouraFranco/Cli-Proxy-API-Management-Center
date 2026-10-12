@@ -512,6 +512,7 @@ export function QuotaPage() {
 
         {!loading && burnType && (
           <QuotaBurnPanel
+            key={burnType}
             type={burnType}
             accounts={burnAccounts}
             nowMs={nowMs}
