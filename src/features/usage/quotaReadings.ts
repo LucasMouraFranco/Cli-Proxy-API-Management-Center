@@ -65,6 +65,21 @@ const writeLog = (log: QuotaReadingLog) => {
   }
 };
 
+/**
+ * When this browser last saved a reading for the account, in any tab, or null.
+ * Read from storage rather than React state so other open tabs count too.
+ */
+export function lastQuotaReadingAt(accountKey: string, nowMs: number): number | null {
+  const windows = readLog(nowMs)[accountKey];
+  if (!windows) return null;
+  let latest: number | null = null;
+  Object.values(windows).forEach((readings) => {
+    const at = readings[readings.length - 1]?.at;
+    if (at !== undefined && (latest === null || at > latest)) latest = at;
+  });
+  return latest;
+}
+
 /** Quota states already saved; a new fetch always produces a new state object. */
 const recordedStates = new WeakSet<object>();
 

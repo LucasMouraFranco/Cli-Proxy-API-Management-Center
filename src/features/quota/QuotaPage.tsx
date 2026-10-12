@@ -29,6 +29,7 @@ import { ProviderTabs } from '@/features/authFiles/components/ProviderTabs';
 import { getTypeLabel } from '@/features/authFiles/constants';
 import { QuotaHeader } from './components/QuotaHeader';
 import { QuotaAccountRow } from './components/QuotaAccountRow';
+import { QuotaBurnPanel } from './components/QuotaBurnPanel';
 import { QuotaSummaryCards } from './components/QuotaSummaryCards';
 import { QuotaTimeline } from './components/QuotaTimeline';
 import {
@@ -50,11 +51,13 @@ import {
   type QuotaFileEntry,
 } from './logic';
 import { buildLastHourActivity } from './quotaActivity';
+import { BURN_WINDOW_IDS, burnAccountFromRow } from './burnForecast';
 import { nextRecoveryMs } from './resetSchedule';
 import { QUOTA_ADAPTERS, getQuotaSetter, type QuotaCardState } from './providers';
 import type { QuotaProviderType } from './providers/types';
 import { useDevinQuotaAutoLoad } from './providers/devin/useDevinQuotaAutoLoad';
 import { useQuotaActions } from './hooks/useQuotaActions';
+import { useQuotaAutoRefresh } from './hooks/useQuotaAutoRefresh';
 import { useQuotaBatchLoader } from './hooks/useQuotaBatchLoader';
 import { useRoutingPreview } from './hooks/useRoutingPreview';
 import {
@@ -189,8 +192,9 @@ export function QuotaPage() {
 
   const entries = useMemo(() => classifyQuotaFiles(files), [files]);
   const tabCounts = useMemo(() => buildTabCounts(entries), [entries]);
-  // Every quota load here also feeds the Usage page's "quota used" history.
-  useQuotaReadings(entries);
+  // Every quota load here also feeds the Usage page's "quota used" history
+  // and the burn forecast.
+  const quotaReadings = useQuotaReadings(entries);
   const filteredEntries = useMemo(
     () => filterEntriesBySearch(filterEntriesByTab(entries, tab), search),
     [entries, tab, search]
@@ -362,6 +366,13 @@ export function QuotaPage() {
 
   const canUseActions = !disableControls && !loading && filesGeneration === sessionGeneration;
 
+  // Every account the burn forecast pools, not just this page, so the pool is complete.
+  const burnRefreshTargets = useMemo(
+    () => entries.filter((entry) => BURN_WINDOW_IDS[entry.type] && !entry.file.disabled),
+    [entries]
+  );
+  useQuotaAutoRefresh(burnRefreshTargets, canUseActions && !error, loadQuota);
+
   /* ---------- Summary cards and provider groups ---------- */
 
   const summaries = useMemo(
@@ -430,6 +441,24 @@ export function QuotaPage() {
     [previewFor]
   );
 
+  // Pooled like the summary cards: every filtered account of the tab's provider.
+  const burnType = tab !== 'all' && BURN_WINDOW_IDS[tab] ? tab : null;
+  const burnAccounts = useMemo(
+    () =>
+      burnType
+        ? filteredEntries
+            .filter((entry) => entry.type === burnType)
+            .map((entry) =>
+              burnAccountFromRow(
+                entry.type,
+                buildQuotaRowModel(t, entry.type, getQuota(entry)),
+                (windowId) => quotaReadings[getQuotaCacheKey(entry.file)]?.[windowId] ?? []
+              )
+            )
+        : [],
+    [burnType, filteredEntries, getQuota, quotaReadings, t]
+  );
+
   const groups = useMemo(
     () =>
       QUOTA_TAB_ORDER.flatMap((type) => {
@@ -480,6 +509,16 @@ export function QuotaPage() {
             onChange={handleTabChange}
           />
         </div>
+
+        {!loading && burnType && (
+          <QuotaBurnPanel
+            key={burnType}
+            type={burnType}
+            accounts={burnAccounts}
+            nowMs={nowMs}
+            style={brandStyle(burnType)}
+          />
+        )}
 
         <div className={styles.toolbar}>
           <div className={styles.search}>

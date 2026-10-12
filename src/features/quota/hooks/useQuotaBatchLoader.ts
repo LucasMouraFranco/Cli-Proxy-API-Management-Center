@@ -27,6 +27,20 @@ interface BatchFetchResult {
   errorStatus?: number;
 }
 
+export interface LoadQuotaOptions {
+  /**
+   * Background refresh: rows keep their current numbers until the new ones
+   * arrive, and a failed fetch keeps them instead of showing an error.
+   */
+  quiet?: boolean;
+}
+
+/** An account whose quota could not be fetched, with the HTTP status when known. */
+export interface QuotaLoadFailure {
+  cacheKey: string;
+  status?: number;
+}
+
 export function useQuotaBatchLoader() {
   const { t } = useTranslation();
   const [batchLoading, setBatchLoading] = useState(false);
@@ -34,9 +48,13 @@ export function useQuotaBatchLoader() {
   const requestIdRef = useRef(0);
 
   const loadQuota = useCallback(
-    async (targets: QuotaFileEntry[]) => {
-      if (loadingRef.current) return;
-      if (targets.length === 0) return;
+    async (
+      targets: QuotaFileEntry[],
+      { quiet = false }: LoadQuotaOptions = {}
+    ): Promise<QuotaLoadFailure[]> => {
+      if (loadingRef.current) return [];
+      if (targets.length === 0) return [];
+      const failures: QuotaLoadFailure[] = [];
       loadingRef.current = true;
       const requestId = ++requestIdRef.current;
       const cacheGeneration = captureQuotaCacheGeneration();
@@ -55,15 +73,17 @@ export function useQuotaBatchLoader() {
             const adapter = QUOTA_ADAPTERS[type];
             const setQuota = getQuotaSetter(adapter);
 
-            commitIfQuotaCacheCurrent(cacheGeneration, () => {
-              setQuota((prev) => {
-                const nextState = { ...prev };
-                entries.forEach(({ file }) => {
-                  nextState[getQuotaCacheKey(file)] = adapter.buildLoadingState();
+            if (!quiet) {
+              commitIfQuotaCacheCurrent(cacheGeneration, () => {
+                setQuota((prev) => {
+                  const nextState = { ...prev };
+                  entries.forEach(({ file }) => {
+                    nextState[getQuotaCacheKey(file)] = adapter.buildLoadingState();
+                  });
+                  return nextState;
                 });
-                return nextState;
               });
-            });
+            }
 
             const results = await Promise.all(
               entries.map(async ({ file }): Promise<BatchFetchResult> => {
@@ -84,12 +104,18 @@ export function useQuotaBatchLoader() {
               })
             );
 
+            results.forEach((result) => {
+              if (result.status === 'error') {
+                failures.push({ cacheKey: result.cacheKey, status: result.errorStatus });
+              }
+            });
             if (requestId !== requestIdRef.current) return;
 
             const committedStates = new Map<string, QuotaCardState>();
             setQuota((prev) => {
               const nextState = { ...prev };
               results.forEach((result) => {
+                if (quiet && result.status === 'error') return;
                 commitIfQuotaCacheCurrent(
                   cacheGeneration,
                   () => {
@@ -121,6 +147,7 @@ export function useQuotaBatchLoader() {
           loadingRef.current = false;
         }
       }
+      return failures;
     },
     [t]
   );
