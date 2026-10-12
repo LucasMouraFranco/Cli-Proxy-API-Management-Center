@@ -107,7 +107,8 @@
     "plugin_store": "插件商店",
     "config_management": "設定面板",
     "logs": "記錄檢視",
-    "system_info": "中心資訊"
+    "system_info": "中心資訊",
+    "usage": "用量"
   },
   "nav_groups": {
     "operate": "運行",
@@ -127,7 +128,8 @@
     "plugin_store": "探索並安裝插件",
     "logs": "請求追蹤與排查",
     "config_management": "閘道基礎設定",
-    "system_info": "運行與診斷資訊"
+    "system_info": "運行與診斷資訊",
+    "usage": "依帳號查看請求、Token 與額度"
   },
   "dashboard": {
     "hero_verdict_good": "運行平穩",
@@ -2289,5 +2291,51 @@
     "bar_title": "{{time}}：快取寫入 {{tokens}} token",
     "spike": "{{time}} 快取寫入激增：{{tokens}} token，約為平時的 {{ratio}} 倍。可能有對話切換到了這個帳號。",
     "spike_idle": "{{time}} 快取寫入激增：閒置帳號寫入 {{tokens}} token。可能有對話切換到了這個帳號。"
+  },
+  "usage_page": {
+    "title": "依帳號查看用量",
+    "meta_accounts": "{{count}} 個帳號",
+    "meta_active": "{{count}} 個活躍",
+    "period_aria": "時間範圍",
+    "period_1h": "1 小時",
+    "period_3h": "3 小時",
+    "period_today": "今天",
+    "period_7d": "7 天",
+    "period_label_1h": "最近 1 小時",
+    "period_label_3h": "最近 3 小時",
+    "period_label_today": "今天",
+    "period_label_7d": "最近 7 天",
+    "stats_aria": "用量彙總",
+    "stat_requests": "請求",
+    "stat_requests_hint": "成功率 {{rate}} · 失敗 {{failed}}",
+    "stat_requests_empty": "此時段內沒有請求",
+    "stat_tokens": "Token",
+    "stat_tokens_hint": "輸入 {{input}} · 輸出 {{output}} · 快取 {{cache}}",
+    "stat_accounts": "活躍帳號",
+    "stat_accounts_hint": "{{count}} 個閒置",
+    "stat_busiest": "最繁忙帳號",
+    "stat_busiest_hint": "佔請求的 {{share}}",
+    "stat_busiest_none": "尚無流量",
+    "list_title": "帳號",
+    "list_meta": "依請求數排序 · {{period}}",
+    "col_rank": "排名",
+    "col_account": "帳號",
+    "col_requests": "請求",
+    "col_tokens": "Token",
+    "col_quota": "已用額度",
+    "col_activity": "活動",
+    "legend_in": "輸入",
+    "legend_out": "輸出",
+    "legend_cache": "快取",
+    "share": "佔流量 {{share}}",
+    "failed_badge": "失敗 {{count}}",
+    "idle": "此時段內沒有請求",
+    "quota_not_tracked": "不追蹤",
+    "quota_unavailable": "額度無法取得",
+    "quota_collecting": "正在收集讀數",
+    "quota_since": "自 {{time}} 起",
+    "activity_aria": "{{name}} 的請求趨勢",
+    "empty": "沒有啟用的帳號。請在認證檔案頁面新增。",
+    "footnote": "請求與 Token 資料來自代理：最近 3 小時以 10 分鐘統計，7 天內以小時統計，重啟後仍保留。已用額度根據本瀏覽器在應用程式開啟時儲存的額度讀數計算，因此可能從時段中途開始。"
   }
 }

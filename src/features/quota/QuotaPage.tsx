@@ -62,6 +62,7 @@ import {
   maskCredentialName,
 } from './quotaOverview';
 import { readQuotaUiState, writeQuotaUiState } from './uiState';
+import { useQuotaReadings } from '@/features/usage/quotaReadings';
 import styles from './QuotaPage.module.scss';
 
 const TAB_IDS: string[] = ['all', ...QUOTA_TAB_ORDER];
@@ -178,6 +179,8 @@ export function QuotaPage() {
 
   const entries = useMemo(() => classifyQuotaFiles(files), [files]);
   const tabCounts = useMemo(() => buildTabCounts(entries), [entries]);
+  // Every quota load here also feeds the Usage page's "quota used" history.
+  useQuotaReadings(entries);
   const filteredEntries = useMemo(
     () => filterEntriesBySearch(filterEntriesByTab(entries, tab), search),
     [entries, tab, search]
