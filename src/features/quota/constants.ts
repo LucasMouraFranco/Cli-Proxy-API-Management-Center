@@ -20,3 +20,12 @@ export const QUOTA_PAGE_SIZE = 20;
 export const QUOTA_SORT_MODES = ['default', 'soonest'] as const;
 
 export type QuotaSortMode = (typeof QUOTA_SORT_MODES)[number];
+
+/**
+ * Provider identity colors, set as `--brand` on summary cards and account groups.
+ * Same values as the Usage page's provider pills.
+ */
+export const QUOTA_PROVIDER_BRAND: Partial<Record<QuotaProviderType, string>> = {
+  claude: '#d97757',
+  codex: '#4f8cff',
+};

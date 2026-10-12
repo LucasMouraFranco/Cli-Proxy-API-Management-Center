@@ -1638,7 +1638,15 @@
     "refresh": "重新整理",
     "renews": "{{date}} 續訂",
     "available": "可用",
-    "next_credit_expiry": "最近到期"
+    "next_credit_expiry": "最近到期",
+    "last_hour": "近 1 小時",
+    "requests_count_other": "{{count}} 次請求",
+    "traffic_share": "佔流量 {{share}}",
+    "tokens_count": "{{tokens}} tokens",
+    "no_requests": "無請求",
+    "activity_aria": "近 1 小時的請求",
+    "busiest": "最繁忙",
+    "busiest_hint": "近 1 小時請求最多"
   },
   "plugin_management": {
     "title": "插件管理",

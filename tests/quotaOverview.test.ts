@@ -74,20 +74,20 @@ const codexQuota = (weeklyUsed: number, resetInHours: number): CodexQuotaState =
 });
 
 describe('quota overview row model', () => {
-  test('Claude rows lead with the 7-day Fable bucket and keep Opus out of the way', () => {
+  test('Claude rows show 7-day, then Fable, then 5-hour, and keep Opus out of the way', () => {
     const model = buildQuotaRowModel(t, 'claude', claudeQuota(42, 21, 30));
-    expect(model?.primary?.id).toBe('seven-day-fable');
-    expect(model?.primary?.remainingPercent).toBe(58);
+    expect(model?.primary?.id).toBe('seven-day');
+    expect(model?.primary?.remainingPercent).toBe(79);
     expect(model?.metrics.map((metric) => metric.id)).toEqual([
+      'seven-day',
       'seven-day-fable',
       'five-hour',
-      'seven-day',
     ]);
-    expect(model?.metrics[2]?.muted).toBe(true);
+    expect(model?.metrics.some((metric) => metric.muted)).toBe(false);
     expect(model?.extra.map((metric) => metric.id)).toEqual(['seven-day-opus']);
   });
 
-  test('Claude rows fall back to the overall 7-day bucket when Fable is unknown', () => {
+  test('Claude rows without Fable show 7-day and 5-hour', () => {
     const model = buildQuotaRowModel(t, 'claude', claudeQuota(null, 25, 30));
     expect(model?.primary?.id).toBe('seven-day');
     expect(model?.primary?.muted).toBeUndefined();
@@ -123,7 +123,7 @@ describe('quota overview row model', () => {
 });
 
 describe('provider summary', () => {
-  test('adds up the Claude model bucket across accounts, like "409% of 500%"', () => {
+  test('adds up the Claude 7-day limit across accounts, with Fable as the secondary total', () => {
     const accounts = [
       { key: 'a', quota: claudeQuota(0, 0, 120) },
       { key: 'b', quota: claudeQuota(49, 25, 21) },
@@ -132,15 +132,18 @@ describe('provider summary', () => {
       { key: 'e', quota: claudeQuota(42, 21, 30) },
     ];
     const summary = buildProviderSummary(t, 'claude', accounts, now);
-    expect(summary.totalRemaining).toBe(409);
+    expect(summary.totalRemaining).toBe(454);
     expect(summary.capacity).toBe(500);
     expect(summary.loadedCount).toBe(5);
-    expect(summary.bucketLabel).toBe(t('claude_quota.seven_day_fable'));
+    expect(summary.bucketLabel).toBe(t('claude_quota.seven_day'));
     expect(summary.nextResetAtMs).toBe(now + 21 * HOUR);
     expect(summary.segments.map((segment) => segment.remainingPercent)).toEqual([
-      100, 51, 100, 100, 58,
+      100, 75, 100, 100, 79,
     ]);
-    expect(summary.secondary?.totalRemaining).toBe(454);
+    expect(summary.secondary).toEqual({
+      label: t('claude_quota.seven_day_fable'),
+      totalRemaining: 409,
+    });
   });
 
   test('adds up Codex weekly limits, like "17% of 300%"', () => {
@@ -264,6 +267,8 @@ describe('quota overview rendering', () => {
         nowMs: now,
         nextPickName: () => 'codex-ae5d455f-t•••@l•••.dev-pro.json',
         nextPickStrategy: () => 'soonest-reset',
+        busiestFor: () => ({ name: 'codex-busy-t•••@l•••.dev.json', requests: 38, share: 0.71 }),
+        brandStyle: () => undefined,
         showExtraBuckets: false,
         onToggleExtraBuckets: () => {},
       })
@@ -272,6 +277,9 @@ describe('quota overview rendering', () => {
     expect(html).toContain('300%');
     expect(html).toContain('3 credentials');
     expect(html).toContain('codex-ae5d455f-t•••@l•••.dev-pro.json');
+    expect(html).toContain('Busiest');
+    expect(html).toContain('codex-busy-t•••@l•••.dev.json');
+    expect(html).toContain('38 req · 71%');
     expect(html).not.toContain('tooling@lumen.dev');
   });
 

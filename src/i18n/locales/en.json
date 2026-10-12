@@ -1615,7 +1615,16 @@
     "refresh": "Refresh",
     "renews": "renews {{date}}",
     "available": "available",
-    "next_credit_expiry": "Next expires"
+    "next_credit_expiry": "Next expires",
+    "last_hour": "Last hour",
+    "requests_count_one": "{{count}} req",
+    "requests_count_other": "{{count}} req",
+    "traffic_share": "{{share}} of traffic",
+    "tokens_count": "{{tokens}} tok",
+    "no_requests": "No requests",
+    "activity_aria": "Requests over the last hour",
+    "busiest": "Busiest",
+    "busiest_hint": "Most requests in the last hour"
   },
   "plugin_management": {
     "title": "Plugin Management",

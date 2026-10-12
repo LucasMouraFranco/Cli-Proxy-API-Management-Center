@@ -201,10 +201,10 @@
 
 .groupTitle {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   margin: 0;
-  padding: 0 4px;
+  padding: 0 4px 4px 0;
   font-size: 14px;
   font-weight: 650;
   color: var(--text-primary);
@@ -216,9 +216,21 @@
   color: var(--text-quaternary);
 }
 
+/* `--brand` comes from the group's provider; providers without one stay neutral. */
+.groupDot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-left: -3px;
+  border-radius: $radius-full;
+  background: var(--brand, var(--text-quaternary));
+}
+
 .rows {
   display: flex;
   flex-direction: column;
+  padding-left: 12px;
+  border-left: 2px solid var(--brand, var(--border-color));
 }
 
 .rowsSkeleton {
