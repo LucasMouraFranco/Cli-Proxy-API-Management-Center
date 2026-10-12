@@ -24,9 +24,10 @@ import { toneForSuccessRate, type MeterTone } from '@/features/dashboard/utils';
 import { getAuthFileIcon, getTypeLabel } from '@/features/authFiles/constants';
 import headerStyles from '@/features/quota/components/QuotaHeader.module.scss';
 import { PrivateText } from '@/features/quota/components/PrivateText';
+import { useQuotaAutoRefresh } from '@/features/quota/hooks/useQuotaAutoRefresh';
 import { useQuotaBatchLoader } from '@/features/quota/hooks/useQuotaBatchLoader';
 import { classifyQuotaFiles, resolveQuotaProviderType } from '@/features/quota/logic';
-import type { QuotaCardState } from '@/features/quota/providers';
+import { QUOTA_ADAPTERS, getQuotaMap, type QuotaCardState } from '@/features/quota/providers';
 import type { QuotaProviderType } from '@/features/quota/providers/types';
 import { buildQuotaRowModel } from '@/features/quota/quotaOverview';
 import { TRACKED_QUOTA_TYPES, useQuotaReadings, type QuotaReadingLog } from './quotaReadings';
@@ -45,8 +46,6 @@ import openaiLogo from '@/assets/icons/openai-light.svg';
 import styles from './UsagePage.module.scss';
 
 const FILES_REFRESH_MS = 60 * 1000;
-/** Quota fetches hit each provider's API, so they run far less often than the file list. */
-const QUOTA_REFRESH_MS = 5 * 60 * 1000;
 
 interface AccountRow {
   key: string;
@@ -114,15 +113,17 @@ export function UsagePage() {
     quotaEntriesRef.current = quotaEntries;
   }, [quotaEntries]);
   const hasQuotaEntries = quotaEntries.length > 0;
+  // Quota fetches hit each provider's usage API, which rate-limits (Claude answers 429).
+  // Opening the page loads only what this tab doesn't have yet; after that the shared
+  // auto-refresh skips accounts any tab loaded recently and backs off after a 429.
   useEffect(() => {
     if (!connected || !hasQuotaEntries) return;
-    void loadQuota(quotaEntriesRef.current);
-    const timer = window.setInterval(
-      () => void loadQuota(quotaEntriesRef.current),
-      QUOTA_REFRESH_MS
+    const missing = quotaEntriesRef.current.filter(
+      (entry) => !getQuotaMap(QUOTA_ADAPTERS[entry.type])[getQuotaCacheKey(entry.file)]
     );
-    return () => window.clearInterval(timer);
+    void loadQuota(missing);
   }, [connected, hasQuotaEntries, loadQuota, sessionGeneration]);
+  useQuotaAutoRefresh(quotaEntries, connected && hasQuotaEntries, loadQuota);
 
   const refreshAll = useCallback(async () => {
     await loadFiles();
