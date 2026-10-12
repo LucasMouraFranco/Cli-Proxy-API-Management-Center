@@ -1,0 +1,373 @@
+/* Burn forecast panel: same card surface as the summary cards, provider color as `--brand`. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-primary);
+  box-shadow: inset 0 2px 0 0 var(--brand, transparent);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.headline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 14px;
+  row-gap: 4px;
+  min-width: 0;
+}
+
+.total {
+  font-size: 30px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--brand, var(--text-primary));
+}
+
+.capacity {
+  margin-left: -8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.rate,
+.runsOut {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.runsOut {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Legend and horizon ---------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand, var(--text-primary));
+}
+
+.legendDash {
+  width: 14px;
+  border-top: 2px dashed var(--brand, var(--text-primary));
+}
+
+.horizon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+/* ---------- Plot ---------- */
+
+.chart {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  grid-template-rows: 220px auto;
+  column-gap: 8px;
+  row-gap: 8px;
+}
+
+.yAxis {
+  position: relative;
+
+  span {
+    position: absolute;
+    right: 0;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-tertiary);
+  }
+}
+
+.plot {
+  position: relative;
+  min-width: 0;
+  touch-action: pan-y;
+}
+
+.gridLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fillTop {
+  stop-color: var(--brand, var(--text-primary));
+  stop-opacity: 0.22;
+}
+
+.fillBottom {
+  stop-color: var(--brand, var(--text-primary));
+  stop-opacity: 0;
+}
+
+.historyLine,
+.projectionLine {
+  fill: none;
+  stroke: var(--brand, var(--text-primary));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.projectionLine {
+  stroke-dasharray: 5 4;
+}
+
+.nowLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed var(--text-tertiary);
+  pointer-events: none;
+}
+
+.nowLabel {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.crosshair {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--text-tertiary);
+  pointer-events: none;
+}
+
+.hoverDot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brand, var(--text-primary));
+  box-shadow: 0 0 0 2px var(--bg-primary);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tooltip {
+  position: absolute;
+  top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--floating-surface, var(--bg-secondary));
+  box-shadow: var(--floating-shadow, none);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transform: translateX(10px);
+  pointer-events: none;
+
+  strong {
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+  }
+
+  &[data-flip='true'] {
+    transform: translateX(calc(-100% - 10px));
+  }
+}
+
+.xAxis {
+  position: relative;
+  grid-column: 2;
+  height: 16px;
+
+  span {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+
+    &[data-edge='start'] {
+      transform: none;
+    }
+
+    &[data-edge='end'] {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+/* ---------- Footer and settings ---------- */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.nextReset {
+  color: var(--text-primary);
+}
+
+.settingsToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 14px 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.fieldLabel {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.rateRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rateInput {
+  width: 110px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
+  }
+}
+
+.note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}

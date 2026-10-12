@@ -27,6 +27,14 @@ interface BatchFetchResult {
   errorStatus?: number;
 }
 
+export interface LoadQuotaOptions {
+  /**
+   * Background refresh: rows keep their current numbers until the new ones
+   * arrive, and a failed fetch keeps them instead of showing an error.
+   */
+  quiet?: boolean;
+}
+
 export function useQuotaBatchLoader() {
   const { t } = useTranslation();
   const [batchLoading, setBatchLoading] = useState(false);
@@ -34,7 +42,7 @@ export function useQuotaBatchLoader() {
   const requestIdRef = useRef(0);
 
   const loadQuota = useCallback(
-    async (targets: QuotaFileEntry[]) => {
+    async (targets: QuotaFileEntry[], { quiet = false }: LoadQuotaOptions = {}) => {
       if (loadingRef.current) return;
       if (targets.length === 0) return;
       loadingRef.current = true;
@@ -55,15 +63,17 @@ export function useQuotaBatchLoader() {
             const adapter = QUOTA_ADAPTERS[type];
             const setQuota = getQuotaSetter(adapter);
 
-            commitIfQuotaCacheCurrent(cacheGeneration, () => {
-              setQuota((prev) => {
-                const nextState = { ...prev };
-                entries.forEach(({ file }) => {
-                  nextState[getQuotaCacheKey(file)] = adapter.buildLoadingState();
+            if (!quiet) {
+              commitIfQuotaCacheCurrent(cacheGeneration, () => {
+                setQuota((prev) => {
+                  const nextState = { ...prev };
+                  entries.forEach(({ file }) => {
+                    nextState[getQuotaCacheKey(file)] = adapter.buildLoadingState();
+                  });
+                  return nextState;
                 });
-                return nextState;
               });
-            });
+            }
 
             const results = await Promise.all(
               entries.map(async ({ file }): Promise<BatchFetchResult> => {
@@ -90,6 +100,7 @@ export function useQuotaBatchLoader() {
             setQuota((prev) => {
               const nextState = { ...prev };
               results.forEach((result) => {
+                if (quiet && result.status === 'error') return;
                 commitIfQuotaCacheCurrent(
                   cacheGeneration,
                   () => {

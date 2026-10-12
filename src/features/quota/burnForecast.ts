@@ -12,6 +12,8 @@
  */
 
 import { DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/time/durations';
+import type { QuotaProviderType } from './providers/types';
+import type { QuotaRowModel } from './quotaOverview';
 
 export const WEEK_MS = 7 * DAY_MS;
 
@@ -165,7 +167,7 @@ export function pooledHistory(
   const instants = [
     ...new Set(
       withReadings.flatMap((account) =>
-        account.readings.map((reading) => reading.at).filter((at) => at >= fromMs)
+        account.readings.map((reading) => reading.at).filter((at) => at >= fromMs && at < nowMs)
       )
     ),
   ].sort((a, b) => a - b);
@@ -307,5 +309,48 @@ export function buildBurnForecast({
     projection: projection.points,
     nextReset: projection.resets[0] ?? null,
     emptyAtMs: projection.emptyAtMs,
+  };
+}
+
+/**
+ * Pooled remaining at `atMs` along a curve, interpolating between points. At a
+ * reset jump (two points at one instant) the value after the jump wins.
+ */
+export function burnValueAt(points: readonly BurnPoint[], atMs: number): number | null {
+  if (points.length === 0) return null;
+  let index = -1;
+  while (index + 1 < points.length && points[index + 1].at <= atMs) index += 1;
+  if (index < 0) return points[0].remaining;
+  const point = points[index];
+  const next = points[index + 1];
+  if (!next) return point.remaining;
+  const fraction = (atMs - point.at) / (next.at - point.at);
+  return point.remaining + (next.remaining - point.remaining) * fraction;
+}
+
+/**
+ * The weekly window each provider pools. Codex team plans report a monthly
+ * window instead; those accounts stay out, since the projection resets weekly.
+ */
+export const BURN_WINDOW_IDS: Partial<Record<QuotaProviderType, string>> = {
+  claude: 'seven-day',
+  codex: 'weekly',
+};
+
+/** An account's weekly window, or an unknown quota when it isn't loaded or has none. */
+export function burnAccountFromRow(
+  type: QuotaProviderType,
+  model: QuotaRowModel | null,
+  readingsFor: (windowId: string) => readonly BurnReading[]
+): BurnAccount {
+  const windowId = BURN_WINDOW_IDS[type];
+  const metric = windowId ? model?.metrics.find((item) => item.id === windowId) : undefined;
+  if (!windowId || !metric || metric.remainingPercent === null) {
+    return { remaining: null, resetAtMs: null, readings: [] };
+  }
+  return {
+    remaining: metric.remainingPercent,
+    resetAtMs: metric.resetAtMs,
+    readings: readingsFor(windowId),
   };
 }

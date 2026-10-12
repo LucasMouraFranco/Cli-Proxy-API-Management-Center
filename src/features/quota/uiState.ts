@@ -4,6 +4,21 @@ import {
   type QuotaSortMode,
   type QuotaTabId,
 } from './constants';
+import {
+  BURN_HORIZON_DAYS,
+  BURN_LOOKBACKS,
+  type BurnHorizonDays,
+  type BurnLookback,
+} from './burnForecast';
+
+/** Burn forecast panel preferences; written as a whole object. */
+export type QuotaBurnUiState = {
+  collapsed?: boolean;
+  horizonDays?: BurnHorizonDays;
+  lookback?: BurnLookback;
+  /** Percent per hour typed by the user; absent means use the measured rate. */
+  manualRate?: number;
+};
 
 /** 额度页 UI 偏好：会话级持久化（sessionStorage），跨会话不携带。 */
 export type QuotaUiState = {
@@ -13,6 +28,7 @@ export type QuotaUiState = {
   showEmails?: boolean;
   /** Extra weekly buckets (Opus, Sonnet, code review) stay hidden unless asked for. */
   showExtraBuckets?: boolean;
+  burn?: QuotaBurnUiState;
 };
 
 const QUOTA_UI_STATE_KEY = 'quotaPage.uiState';
@@ -26,6 +42,25 @@ export const isQuotaTabId = (value: unknown): value is QuotaTabId =>
 export const isQuotaSortMode = (value: unknown): value is QuotaSortMode =>
   typeof value === 'string' && QUOTA_SORT_MODE_SET.has(value);
 
+const readBurnUiState = (value: unknown): QuotaBurnUiState | undefined => {
+  if (!value || typeof value !== 'object') return undefined;
+  const burn = value as Record<string, unknown>;
+  const manualRate = burn.manualRate;
+  return {
+    collapsed: burn.collapsed === true ? true : undefined,
+    horizonDays: (BURN_HORIZON_DAYS as readonly unknown[]).includes(burn.horizonDays)
+      ? (burn.horizonDays as BurnHorizonDays)
+      : undefined,
+    lookback: (BURN_LOOKBACKS as readonly unknown[]).includes(burn.lookback)
+      ? (burn.lookback as BurnLookback)
+      : undefined,
+    manualRate:
+      typeof manualRate === 'number' && Number.isFinite(manualRate) && manualRate >= 0
+        ? manualRate
+        : undefined,
+  };
+};
+
 export const readQuotaUiState = (): QuotaUiState | null => {
   if (typeof window === 'undefined') return null;
   try {
@@ -38,6 +73,7 @@ export const readQuotaUiState = (): QuotaUiState | null => {
       sortMode: isQuotaSortMode(parsed.sortMode) ? parsed.sortMode : undefined,
       showEmails: parsed.showEmails === true ? true : undefined,
       showExtraBuckets: parsed.showExtraBuckets === true ? true : undefined,
+      burn: readBurnUiState(parsed.burn),
     };
   } catch {
     return null;

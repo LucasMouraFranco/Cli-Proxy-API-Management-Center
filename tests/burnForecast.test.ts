@@ -2,6 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import {
   WEEK_MS,
   buildBurnForecast,
+  burnAccountFromRow,
+  burnValueAt,
   measureDrainRate,
   pooledHistory,
   projectBurn,
@@ -194,5 +196,71 @@ describe('buildBurnForecast', () => {
     expect(forecast.ratePerHour).toBe(null);
     expect(forecast.rateSource).toBe(null);
     expect(forecast.nextReset).toEqual({ at: NOW + DAY, gain: 100 });
+  });
+});
+
+describe('burnValueAt', () => {
+  const points = [
+    { at: NOW, remaining: 100 },
+    { at: NOW + 10 * HOUR, remaining: 50 },
+    { at: NOW + 10 * HOUR, remaining: 150 },
+    { at: NOW + 20 * HOUR, remaining: 100 },
+  ];
+
+  test('interpolates between points and takes the value after a reset jump', () => {
+    expect(burnValueAt(points, NOW + 5 * HOUR)).toBe(75);
+    expect(burnValueAt(points, NOW + 10 * HOUR)).toBe(150);
+    expect(burnValueAt(points, NOW + 15 * HOUR)).toBe(125);
+  });
+
+  test('holds the end values outside the curve', () => {
+    expect(burnValueAt(points, NOW - HOUR)).toBe(100);
+    expect(burnValueAt(points, NOW + 30 * HOUR)).toBe(100);
+    expect(burnValueAt([], NOW)).toBe(null);
+  });
+});
+
+describe('burnAccountFromRow', () => {
+  const metric = (id: string, remainingPercent: number | null) => ({
+    id,
+    label: id,
+    remainingPercent,
+    resetAtMs: NOW + DAY,
+  });
+  const readings = [{ at: NOW, remaining: 40 }];
+
+  test("pools Claude's 7-day limit and Codex's weekly limit with their readings", () => {
+    const claude = burnAccountFromRow(
+      'claude',
+      { primary: null, metrics: [metric('five-hour', 10), metric('seven-day', 40)], extra: [] },
+      (windowId) => (windowId === 'seven-day' ? readings : [])
+    );
+    expect(claude).toEqual({ remaining: 40, resetAtMs: NOW + DAY, readings });
+
+    const codex = burnAccountFromRow(
+      'codex',
+      { primary: null, metrics: [metric('weekly', 70)], extra: [] },
+      () => []
+    );
+    expect(codex.remaining).toBe(70);
+  });
+
+  test('an unloaded account, a monthly Codex plan or another provider is unknown', () => {
+    const unknown = { remaining: null, resetAtMs: null, readings: [] };
+    expect(burnAccountFromRow('claude', null, () => readings)).toEqual(unknown);
+    expect(
+      burnAccountFromRow(
+        'codex',
+        { primary: null, metrics: [metric('monthly', 70)], extra: [] },
+        () => []
+      )
+    ).toEqual(unknown);
+    expect(
+      burnAccountFromRow(
+        'kimi',
+        { primary: null, metrics: [metric('weekly', 70)], extra: [] },
+        () => []
+      )
+    ).toEqual(unknown);
   });
 });
