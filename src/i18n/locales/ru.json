@@ -1620,7 +1620,18 @@
     "refresh": "Обновить",
     "renews": "продление {{date}}",
     "available": "доступно",
-    "next_credit_expiry": "Ближайший истекает"
+    "next_credit_expiry": "Ближайший истекает",
+    "last_hour": "Последний час",
+    "requests_count_one": "{{count}} запр.",
+    "requests_count_few": "{{count}} запр.",
+    "requests_count_many": "{{count}} запр.",
+    "requests_count_other": "{{count}} запр.",
+    "traffic_share": "{{share}} трафика",
+    "tokens_count": "{{tokens}} ток.",
+    "no_requests": "Нет запросов",
+    "activity_aria": "Запросы за последний час",
+    "busiest": "Самый активный",
+    "busiest_hint": "Больше всего запросов за последний час"
   },
   "plugin_management": {
     "title": "Управление плагинами",

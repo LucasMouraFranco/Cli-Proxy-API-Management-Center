@@ -1,9 +1,10 @@
 /**
- * One summary card per provider: the weekly (model) bucket added up across
- * accounts ("409% of 500%"), a segment per account, the soonest reset, and the
- * account the routing strategy would pick next.
+ * One summary card per provider: the weekly bucket added up across accounts
+ * ("409% of 500%"), a segment per account, the soonest reset, the account the
+ * routing strategy would pick next, and the account busiest in the last hour.
  */
 
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ResolvedTheme } from '@/types';
 import { formatInstantShort, formatRelativeInstant } from '@/utils/quota';
@@ -13,6 +14,7 @@ import {
   getTypeLabel,
   isThemeSurfaceIconProvider,
 } from '@/features/authFiles/constants';
+import type { QuotaProviderType } from '../providers/types';
 import { toneForRemaining, type ProviderSummary } from '../quotaOverview';
 import styles from './QuotaSummaryCards.module.scss';
 
@@ -23,6 +25,10 @@ export interface QuotaSummaryCardsProps {
   /** Display name of the next pick per provider, already masked when emails are hidden. */
   nextPickName: (provider: string) => string | null;
   nextPickStrategy: (provider: string) => string | null;
+  /** Account with the most requests in the last hour, name already masked. */
+  busiestFor: (provider: string) => { name: string; requests: number; share: number | null } | null;
+  /** Sets the provider identity color as `--brand`. */
+  brandStyle: (type: QuotaProviderType) => CSSProperties | undefined;
   showExtraBuckets: boolean;
   onToggleExtraBuckets: () => void;
 }
@@ -36,6 +42,8 @@ export function QuotaSummaryCards(props: QuotaSummaryCardsProps) {
     nowMs,
     nextPickName,
     nextPickStrategy,
+    busiestFor,
+    brandStyle,
     showExtraBuckets,
     onToggleExtraBuckets,
   } = props;
@@ -49,13 +57,14 @@ export function QuotaSummaryCards(props: QuotaSummaryCardsProps) {
         const iconSrc = getAuthFileIcon(summary.type, resolvedTheme);
         const nextPick = nextPickName(summary.type);
         const strategy = nextPickStrategy(summary.type);
+        const busiest = busiestFor(summary.type);
         const tone = toneForRemaining(
           summary.totalRemaining === null || summary.credentialCount === 0
             ? null
             : summary.totalRemaining / summary.credentialCount
         );
         return (
-          <article key={summary.type} className={styles.card}>
+          <article key={summary.type} className={styles.card} style={brandStyle(summary.type)}>
             <header className={styles.head}>
               <span className={styles.provider}>
                 <span
@@ -133,6 +142,17 @@ export function QuotaSummaryCards(props: QuotaSummaryCardsProps) {
               >
                 <span className={styles.nextLabel}>{t('quota_overview.next_pick')}</span>
                 <span className={styles.nextName}>{nextPick}</span>
+              </div>
+            )}
+
+            {busiest && (
+              <div className={styles.next} title={t('quota_overview.busiest_hint')}>
+                <span className={styles.busiestLabel}>{t('quota_overview.busiest')}</span>
+                <span className={styles.nextName}>{busiest.name}</span>
+                <span className={styles.busiestStats}>
+                  {t('quota_overview.requests_count', { count: busiest.requests })}
+                  {busiest.share !== null && ` · ${Math.round(busiest.share * 100)}%`}
+                </span>
               </div>
             )}
 

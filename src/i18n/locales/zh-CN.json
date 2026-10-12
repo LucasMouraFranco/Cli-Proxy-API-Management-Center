@@ -1612,7 +1612,15 @@
     "refresh": "刷新",
     "renews": "{{date}} 续订",
     "available": "可用",
-    "next_credit_expiry": "最近到期"
+    "next_credit_expiry": "最近到期",
+    "last_hour": "近 1 小时",
+    "requests_count_other": "{{count}} 次请求",
+    "traffic_share": "占流量 {{share}}",
+    "tokens_count": "{{tokens}} tokens",
+    "no_requests": "无请求",
+    "activity_aria": "近 1 小时的请求",
+    "busiest": "最繁忙",
+    "busiest_hint": "近 1 小时请求最多"
   },
   "plugin_management": {
     "title": "插件管理",

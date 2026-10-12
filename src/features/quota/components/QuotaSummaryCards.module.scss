@@ -13,7 +13,10 @@
   gap: 6px;
   min-width: 0;
   padding: 18px 18px 16px;
-  box-shadow: -1px 0 0 0 var(--border-color);
+  /* Left divider, plus the provider color across the top. */
+  box-shadow:
+    -1px 0 0 0 var(--border-color),
+    inset 0 2px 0 0 var(--brand, transparent);
 }
 
 .head {
@@ -166,6 +169,24 @@
   font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.busiestLabel {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: $radius-full;
+  background: color-mix(in srgb, var(--brand, var(--text-primary)) 16%, transparent);
+  color: color-mix(in srgb, var(--brand, var(--text-primary)) 78%, var(--text-primary));
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.busiestStats {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-quaternary);
 }
 
 .nextName {

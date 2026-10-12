@@ -1,6 +1,7 @@
 .row {
   display: grid;
-  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr) auto;
+  /* Identity and activity have fixed tracks so every row's columns line up. */
+  grid-template-columns: minmax(200px, 240px) 170px minmax(0, 1fr) auto;
   align-items: start;
   gap: 12px 28px;
   padding: 16px 4px;
@@ -13,9 +14,15 @@
   @media (max-width: $breakpoint-tablet) {
     grid-template-columns: minmax(0, 1fr) auto;
 
-    .body {
+    .activity {
       grid-column: 1 / -1;
       grid-row: 2;
+      max-width: 220px;
+    }
+
+    .body {
+      grid-column: 1 / -1;
+      grid-row: 3;
     }
 
     .metrics {
@@ -138,6 +145,43 @@
   white-space: nowrap;
   font-size: 12.5px;
   color: var(--text-secondary);
+}
+
+/* Last hour: requests, a sparkline in the provider color, and the traffic share. */
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.activityValue {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.spark {
+  height: 18px;
+}
+
+.activityDetail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-quaternary);
+}
+
+.activityShare {
+  color: var(--text-secondary);
+}
+
+.activity[data-busiest] .activityShare {
+  font-weight: 650;
+  color: var(--brand, var(--text-primary));
 }
 
 .metricValue {

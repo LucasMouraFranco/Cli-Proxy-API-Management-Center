@@ -30,12 +30,12 @@ export interface QuotaMetric {
   resetAtMs: number | null;
   /** Fetch-time absolute label, for providers whose instant is relative to the fetch. */
   resetLabel?: string;
-  /** Shown with less emphasis (the overall 7-day bar next to the model bucket). */
+  /** Shown with less emphasis (extra buckets such as Opus or Sonnet). */
   muted?: boolean;
 }
 
 export interface QuotaRowModel {
-  /** The bucket the provider summary adds up: the weekly (model) limit. */
+  /** The bucket the provider summary adds up: the weekly limit. */
   primary: QuotaMetric | null;
   /** Bars shown on the row, in order. */
   metrics: QuotaMetric[];
@@ -55,7 +55,7 @@ export interface ProviderSummary {
   segments: { key: string; remainingPercent: number | null }[];
   /** Soonest future reset of the primary bucket. */
   nextResetAtMs: number | null;
-  /** Claude only: the overall 7-day limit summed the same way. */
+  /** Claude only: the 7-day Fable bucket summed the same way. */
   secondary: { label: string; totalRemaining: number | null } | null;
 }
 
@@ -99,12 +99,12 @@ const claudeRowModel = (t: TFunction, quota: ClaudeQuotaState): QuotaRowModel =>
   const fable = byId('seven-day-fable');
   const fiveHour = byId('five-hour');
   const sevenDay = byId('seven-day');
-  const primaryWindow = fable ?? sevenDay;
+  // The overall 7-day limit leads: it caps every model, so it runs out first in practice.
   const metrics: QuotaMetric[] = [];
-  if (primaryWindow) metrics.push(windowMetric(t, primaryWindow));
+  if (sevenDay) metrics.push(windowMetric(t, sevenDay));
+  if (fable) metrics.push(windowMetric(t, fable));
   if (fiveHour) metrics.push(windowMetric(t, fiveHour));
-  if (fable && sevenDay) metrics.push(windowMetric(t, sevenDay, true));
-  const shown = new Set([primaryWindow?.id, fiveHour?.id, sevenDay?.id]);
+  const shown = new Set([sevenDay?.id, fable?.id, fiveHour?.id]);
   return {
     primary: metrics[0] ?? null,
     metrics,
@@ -211,12 +211,14 @@ export const buildProviderSummary = (
           nextResetAtMs === null ? primary.resetAtMs : Math.min(nextResetAtMs, primary.resetAtMs);
       }
     }
-    const overall =
-      type === 'claude' ? model?.metrics.find((metric) => metric.id === 'seven-day') : undefined;
-    if (overall && overall !== primary) {
-      secondaryLabel = overall.label;
-      if (overall.remainingPercent !== null)
-        secondaryTotal = (secondaryTotal ?? 0) + overall.remainingPercent;
+    const fable =
+      type === 'claude'
+        ? model?.metrics.find((metric) => metric.id === 'seven-day-fable')
+        : undefined;
+    if (fable && fable !== primary) {
+      secondaryLabel = fable.label;
+      if (fable.remainingPercent !== null)
+        secondaryTotal = (secondaryTotal ?? 0) + fable.remainingPercent;
     }
     return { key, remainingPercent: primary?.remainingPercent ?? null };
   });

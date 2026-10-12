@@ -11,7 +11,7 @@
  * strategy would pick next is marked (CLIProxyAPI fork routing preview).
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authFilesApi } from '@/services/api';
 import { Button } from '@/components/ui/Button';
@@ -33,6 +33,7 @@ import { QuotaSummaryCards } from './components/QuotaSummaryCards';
 import { QuotaTimeline } from './components/QuotaTimeline';
 import {
   QUOTA_PAGE_SIZE,
+  QUOTA_PROVIDER_BRAND,
   QUOTA_SORT_MODES,
   QUOTA_TAB_ORDER,
   type QuotaSortMode,
@@ -48,6 +49,7 @@ import {
   sortQuotaEntries,
   type QuotaFileEntry,
 } from './logic';
+import { buildLastHourActivity } from './quotaActivity';
 import { nextRecoveryMs } from './resetSchedule';
 import { QUOTA_ADAPTERS, getQuotaSetter, type QuotaCardState } from './providers';
 import type { QuotaProviderType } from './providers/types';
@@ -70,6 +72,14 @@ const SKELETON_ROW_COUNT = 6;
 
 /** Timeline lanes and rows show file names; identity when emails are visible. */
 const showNameAsIs = (name: string) => name;
+
+const entryKey = (entry: QuotaFileEntry) => `${entry.type}:${getQuotaCacheKey(entry.file)}`;
+
+/** Sets `--brand` for providers with an identity color. */
+const brandStyle = (type: QuotaProviderType): CSSProperties | undefined => {
+  const color = QUOTA_PROVIDER_BRAND[type];
+  return color ? ({ '--brand': color } as CSSProperties) : undefined;
+};
 
 export function QuotaPage() {
   const { t } = useTranslation();
@@ -386,6 +396,35 @@ export function QuotaPage() {
     },
     [displayNameFor, entries, previewFor]
   );
+  // Shares are taken over every filtered account, not just this page, like the summaries.
+  const activity = useMemo(
+    () =>
+      buildLastHourActivity(
+        filteredEntries.map((entry) => ({
+          key: entryKey(entry),
+          type: entry.type,
+          file: entry.file,
+        })),
+        nowMs
+      ),
+    [filteredEntries, nowMs]
+  );
+  const busiestFor = useCallback(
+    (provider: string) => {
+      const match = filteredEntries.find(
+        (entry) => entry.type === provider && activity.get(entryKey(entry))?.busiest
+      );
+      const account = match ? activity.get(entryKey(match)) : undefined;
+      if (!match || !account) return null;
+      return {
+        name: displayNameFor(getQuotaAccountLabel(match.file).name),
+        requests: account.usage.requests,
+        share: account.share,
+      };
+    },
+    [activity, displayNameFor, filteredEntries]
+  );
+
   const nextPickStrategy = useCallback(
     (provider: string) => previewFor(provider)?.strategy || null,
     [previewFor]
@@ -493,6 +532,8 @@ export function QuotaPage() {
             nowMs={nowMs}
             nextPickName={nextPickName}
             nextPickStrategy={nextPickStrategy}
+            busiestFor={busiestFor}
+            brandStyle={brandStyle}
             showExtraBuckets={showExtraBuckets}
             onToggleExtraBuckets={handleToggleExtraBuckets}
           />
@@ -538,9 +579,11 @@ export function QuotaPage() {
               <section
                 key={group.type}
                 className={styles.group}
+                style={brandStyle(group.type)}
                 aria-labelledby={`quota-group-${group.type}`}
               >
                 <h2 id={`quota-group-${group.type}`} className={styles.groupTitle}>
+                  <span className={styles.groupDot} aria-hidden="true" />
                   {getTypeLabel(t, group.type)}
                   <span className={styles.groupCount}>{group.total}</span>
                 </h2>
@@ -549,7 +592,7 @@ export function QuotaPage() {
                     const quota = getQuota(entry);
                     return (
                       <QuotaAccountRow
-                        key={`${entry.type}:${getQuotaCacheKey(entry.file)}`}
+                        key={entryKey(entry)}
                         entry={entry}
                         quota={quota}
                         model={buildQuotaRowModel(t, entry.type, quota)}
@@ -557,6 +600,7 @@ export function QuotaPage() {
                         showEmails={showEmails}
                         nowMs={nowMs}
                         isNextPick={isNextPick(entry)}
+                        activity={activity.get(entryKey(entry))}
                         showExtraBuckets={showExtraBuckets}
                         canRefresh={canUseActions && !entry.file.disabled}
                         resetting={resettingQuotaName === getQuotaCacheKey(entry.file)}

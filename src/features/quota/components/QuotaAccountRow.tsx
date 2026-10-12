@@ -1,6 +1,6 @@
 /**
- * One account on the Quota Management page: identity, the provider's quota bars
- * (weekly model bucket, 5-hour, 7-day), Codex plan/renewal/manual resets, xAI
+ * One account on the Quota Management page: identity, last-hour activity, the
+ * provider's quota bars (7-day, 7-day Fable, 5-hour), Codex plan/renewal/manual resets, xAI
  * monthly credits, cache usage, and the refresh/reset actions. Providers without a
  * compact model render their full quota body in the row.
  */
@@ -8,6 +8,7 @@
 import { useTranslation } from 'react-i18next';
 import { IconRefreshCw } from '@/components/ui/icons';
 import { CredentialCacheUsage } from '@/components/usage/CredentialCacheUsage';
+import { Sparkline } from '@/features/dashboard/components/Sparkline';
 import type { ClaudeQuotaState, CodexQuotaState, XaiQuotaState } from '@/types';
 import {
   formatInstantShort,
@@ -16,6 +17,7 @@ import {
   resolveQuotaErrorMessage,
   resolveResetMs,
 } from '@/utils/quota';
+import { formatTokenCount } from '@/utils/tokenUsage';
 import type { QuotaAccountLabel } from '@/utils/quota/identity';
 import { bindQuotaClasses } from '../types';
 import { QUOTA_ADAPTERS, type QuotaCardState } from '../providers';
@@ -23,6 +25,7 @@ import { isQuotaRefreshDisabled, type QuotaFileEntry } from '../logic';
 import { useClaudeResetGrants } from '../providers/claude/ClaudeResetGrants';
 import { getCodexPlanLabel } from '../providers/codex/planLabel';
 import { formatXaiOnDemandAmount, formatXaiRemainingAmount } from '../providers/xai/amounts';
+import type { AccountActivity } from '../quotaActivity';
 import { toneForRemaining, type QuotaMetric, type QuotaRowModel } from '../quotaOverview';
 import { PrivateText } from './PrivateText';
 import bodyStyles from './QuotaBody.module.scss';
@@ -40,6 +43,7 @@ export interface QuotaAccountRowProps {
   showEmails: boolean;
   nowMs: number;
   isNextPick: boolean;
+  activity?: AccountActivity;
   showExtraBuckets: boolean;
   canRefresh: boolean;
   resetting: boolean;
@@ -85,6 +89,46 @@ function MetricCell({
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function ActivityCell({ activity }: { activity?: AccountActivity }) {
+  const { t } = useTranslation();
+  const requests = activity?.usage.requests ?? 0;
+  const share = activity?.share ?? null;
+  const shareText =
+    share === null
+      ? ''
+      : t('quota_overview.traffic_share', { share: `${Math.round(share * 100)}%` });
+  const tokensText = t('quota_overview.tokens_count', {
+    tokens: formatTokenCount(activity?.usage.tokens.total ?? 0),
+  });
+  return (
+    <div className={styles.activity} data-busiest={activity?.busiest || undefined}>
+      <div className={styles.metricHead}>
+        <span className={styles.metricLabel}>{t('quota_overview.last_hour')}</span>
+        {requests > 0 && (
+          <span className={styles.activityValue}>
+            {t('quota_overview.requests_count', { count: requests })}
+          </span>
+        )}
+      </div>
+      <Sparkline
+        points={activity?.usage.series ?? []}
+        color="var(--brand, var(--primary-color))"
+        ariaLabel={t('quota_overview.activity_aria')}
+        className={styles.spark}
+      />
+      {requests > 0 ? (
+        <div className={styles.activityDetail} title={`${shareText} · ${tokensText}`}>
+          {share !== null && <span className={styles.activityShare}>{shareText}</span>}
+          {' · '}
+          {tokensText}
+        </div>
+      ) : (
+        <div className={styles.activityDetail}>{t('quota_overview.no_requests')}</div>
+      )}
     </div>
   );
 }
@@ -182,6 +226,7 @@ export function QuotaAccountRow(props: QuotaAccountRowProps) {
     showEmails,
     nowMs,
     isNextPick,
+    activity,
     showExtraBuckets,
     canRefresh,
     resetting,
@@ -277,6 +322,8 @@ export function QuotaAccountRow(props: QuotaAccountRowProps) {
           </div>
         )}
       </div>
+
+      <ActivityCell activity={activity} />
 
       <div className={styles.body}>
         {status === 'idle' ? (
