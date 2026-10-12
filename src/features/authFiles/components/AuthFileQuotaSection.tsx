@@ -15,6 +15,9 @@ import { IconRefreshCw } from '@/components/ui/icons';
 import { bindQuotaClasses } from '@/features/quota/types';
 import { QUOTA_ADAPTERS, type QuotaCardState } from '@/features/quota/providers';
 import styles from './AuthFileQuota.module.scss';
+import { useNow } from '@/hooks/useNow';
+import { isQuotaGuarded, parseQuotaGuard, quotaGuardFloor } from '../quotaGuard';
+import { buildQuotaRowModel } from '@/features/quota/quotaOverview';
 
 /** 认证文件卡片外衣：紧凑额度样式绑定成类型化契约（缺键在模块初始化即抛）。 */
 const compactQuotaClasses = bindQuotaClasses(styles, 'AuthFileQuota.module.scss');
@@ -183,8 +186,33 @@ export function AuthFileQuotaSection(props: AuthFileQuotaSectionProps) {
     quota?.error || t('common.unknown_error')
   );
 
+  const nowMs = useNow(Boolean(quota));
+  const guardConfig = parseQuotaGuard(file['quota_guard'] ?? file['quota-guard']);
+  const rowModel = quota ? buildQuotaRowModel(t, quotaType, quota) : null;
+  const primary = rowModel?.primary ?? null;
+  // The proxy only guards the Claude and Codex weekly windows. Showing a
+  // paused state for any other bucket would claim protection that is not real.
+  const guardApplies =
+    (quotaType === 'claude' && primary?.id === 'seven-day') ||
+    (quotaType === 'codex' && primary?.id === 'weekly');
+  const ttlMs =
+    guardApplies && primary?.resetAtMs != null ? primary.resetAtMs - nowMs : null;
+  const guardFloor = quotaGuardFloor(guardConfig, ttlMs);
+  const guarded =
+    guardApplies &&
+    isQuotaGuarded(guardConfig, primary?.remainingPercent ?? null, ttlMs);
+
   return (
     <div className={styles.quotaSection}>
+      {guardConfig?.enabled && (
+        <div className={styles.quotaMessage} role={guarded ? 'alert' : undefined}>
+          {guarded
+            ? t('auth_files.quota_guard_paused', { floor: guardFloor ?? 0 })
+            : guardFloor !== null
+              ? t('auth_files.quota_guard_active', { floor: guardFloor })
+              : t('auth_files.quota_guard_enabled')}
+        </div>
+      )}
       {quotaStatus === 'loading' ? (
         <div className={styles.quotaMessage}>{t(`${adapter.i18nPrefix}.loading`)}</div>
       ) : quotaStatus === 'idle' ? (

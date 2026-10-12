@@ -439,7 +439,17 @@
     "quota_refresh_single": "Обновить квоту",
     "quota_refresh_hint": "Обновить квоту только для этих учётных данных",
     "quota_refresh_success": "Квота для \"{{name}}\" обновлена",
-    "quota_refresh_failed": "Не удалось обновить квоту для \"{{name}}\": {{message}}"
+    "quota_refresh_failed": "Не удалось обновить квоту для \"{{name}}\": {{message}}",
+    "quota_guard_label": "Защита общего аккаунта",
+    "quota_guard_hint": "Останавливать использование аккаунта до полного исчерпания. Применяется к недельному лимиту.",
+    "quota_guard_hours": "Часов до сброса",
+    "quota_guard_min_remaining": "Оставлять не менее %",
+    "quota_guard_add_step": "Добавить шаг",
+    "quota_guard_steps_hint": "Пример: при 24 часах до сброса оставлять 30%. Ниже наименьшего шага действует тот же минимум.",
+    "quota_guard_invalid": "Проверьте шаги: часы от 0 до 8784, процент от 0 до 100, без повторов часов.",
+    "quota_guard_paused": "Пауза из-за защиты. До сброса сохраняется {{floor}}%.",
+    "quota_guard_active": "Защита включена. Текущий минимум {{floor}}%.",
+    "quota_guard_enabled": "Защита включена. Ожидание данных квоты."
   },
   "antigravity_subscription": {
     "plan_unknown": "Неизвестно",

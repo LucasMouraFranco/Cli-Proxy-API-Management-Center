@@ -434,7 +434,17 @@
     "quota_refresh_single": "刷新额度",
     "quota_refresh_hint": "仅刷新该认证文件的额度",
     "quota_refresh_success": "已刷新 \"{{name}}\" 的额度",
-    "quota_refresh_failed": "刷新 \"{{name}}\" 的额度失败：{{message}}"
+    "quota_refresh_failed": "刷新 \"{{name}}\" 的额度失败：{{message}}",
+    "quota_guard_label": "共享账号保护",
+    "quota_guard_hint": "在账号耗尽前停止使用。适用于周额度。",
+    "quota_guard_hours": "距重置小时数",
+    "quota_guard_min_remaining": "至少保留 %",
+    "quota_guard_add_step": "添加档位",
+    "quota_guard_steps_hint": "示例：剩余 24 小时时保留 30%。低于最小档位时仍适用该下限。",
+    "quota_guard_invalid": "请检查档位：小时 0 到 8784，百分比 0 到 100，小时数不能重复。",
+    "quota_guard_paused": "已被保护暂停。重置前保留 {{floor}}%。",
+    "quota_guard_active": "保护已开启。当前下限 {{floor}}%。",
+    "quota_guard_enabled": "保护已开启。等待额度数据。"
   },
   "antigravity_subscription": {
     "plan_unknown": "未知",

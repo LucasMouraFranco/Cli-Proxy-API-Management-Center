@@ -30,6 +30,12 @@ import {
   validateCredentialWeightText,
   type CredentialWeightError,
 } from '@/utils/credentialWeight';
+import {
+  buildQuotaGuardPatch,
+  quotaGuardError,
+  readQuotaGuard,
+  type QuotaGuardDraft,
+} from '@/features/authFiles/quotaGuard';
 
 type AuthFileHeaders = Record<string, string>;
 type AuthFileHeadersErrorKey =
@@ -43,6 +49,7 @@ type AuthFileEditorErrorKey = AuthFileHeadersErrorKey | AuthFileWeightErrorKey;
 
 export type PrefixProxyEditorField =
   | CredentialPolicyField
+  | 'quotaGuard'
   | 'prefix'
   | 'proxyUrl'
   | 'priority'
@@ -54,10 +61,11 @@ export type PrefixProxyEditorField =
   | 'excludedModelsText'
   | 'headersText';
 
-export type PrefixProxyEditorFieldValue = string | boolean | CredentialPolicyValue;
+export type PrefixProxyEditorFieldValue = string | boolean | CredentialPolicyValue | QuotaGuardDraft;
 
 export type PrefixProxyEditorState = {
   policy?: CredentialPolicyDraft;
+  quotaGuard?: QuotaGuardDraft;
   fileName: string;
   fileInfoText: string;
   loading: boolean;
@@ -389,6 +397,7 @@ export const buildAuthFileFieldsPatch = (
   }
 
   Object.assign(patch, buildCredentialPolicyPatch(original, editor.policy));
+  Object.assign(patch, buildQuotaGuardPatch(original, editor.quotaGuard));
   return patch;
 };
 
@@ -453,6 +462,11 @@ const buildPrefixProxyUpdatedText = (
   }
 
   applyCredentialPolicyPatch(next, patch);
+  if (patch.quota_guard !== undefined) {
+    delete next['quota-guard'];
+    if (patch.quota_guard === null) delete next.quota_guard;
+    else next.quota_guard = patch.quota_guard;
+  }
   applyHeadersPatch(next, patch.headers);
 
   if (patch.websockets !== undefined) {
@@ -480,7 +494,8 @@ export function useAuthFilesPrefixProxyEditor(
   const hasBlockingValidationError = Boolean(
     (prefixProxyEditor?.headersTouched && prefixProxyEditor.headersError) ||
     prefixProxyEditor?.weightError ||
-    credentialPolicyError(prefixProxyEditor?.policy)
+    credentialPolicyError(prefixProxyEditor?.policy) ||
+    quotaGuardError(prefixProxyEditor?.quotaGuard)
   );
   const prefixProxyUpdatedText =
     prefixProxyEditor && !hasBlockingValidationError
@@ -493,7 +508,9 @@ export function useAuthFilesPrefixProxyEditor(
       : null;
 
   const prefixProxyDirty =
-    hasKeys(prefixProxyPatch) || Boolean(credentialPolicyError(prefixProxyEditor?.policy));
+    hasKeys(prefixProxyPatch) ||
+    Boolean(credentialPolicyError(prefixProxyEditor?.policy)) ||
+    Boolean(quotaGuardError(prefixProxyEditor?.quotaGuard));
 
   const closePrefixProxyEditor = () => {
     editorRequestRef.current += 1;
@@ -611,6 +628,7 @@ export function useAuthFilesPrefixProxyEditor(
           invalidContentPreview: '',
           json,
           policy: readCredentialPolicy(json),
+          quotaGuard: readQuotaGuard(json),
           providerKey,
           prefix,
           proxyUrl,
@@ -660,6 +678,9 @@ export function useAuthFilesPrefixProxyEditor(
             touched: { ...policy.touched, [field]: true },
           },
         };
+      }
+      if (field === 'quotaGuard') {
+        return { ...prev, quotaGuard: value as QuotaGuardDraft };
       }
       if (field === 'prefix') return { ...prev, prefix: String(value) };
       if (field === 'proxyUrl') return { ...prev, proxyUrl: String(value) };

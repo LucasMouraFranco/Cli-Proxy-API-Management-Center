@@ -22,6 +22,7 @@ type AuthFileStatusResponse = { status: string; disabled: boolean };
 export type AuthFileLookup = { name: string; authIndex?: string };
 type AuthFileEntry = AuthFilesResponse['files'][number];
 export type AuthFileFieldsPatch = {
+  quota_guard?: { enabled: boolean; steps: Array<{ hours: number; min_remaining: number }> } | null;
   request_retry?: number | null;
   model_aliases?: Array<{
     name: string;

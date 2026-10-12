@@ -436,7 +436,17 @@
     "quota_refresh_single": "Refresh quota",
     "quota_refresh_hint": "Refresh quota only for this credential",
     "quota_refresh_success": "Quota refreshed for \"{{name}}\"",
-    "quota_refresh_failed": "Failed to refresh quota for \"{{name}}\": {{message}}"
+    "quota_refresh_failed": "Failed to refresh quota for \"{{name}}\": {{message}}",
+    "quota_guard_label": "Shared account guard",
+    "quota_guard_hint": "Stop using this account before it hits zero. Applies to the weekly limit.",
+    "quota_guard_hours": "Hours to reset",
+    "quota_guard_min_remaining": "Keep at least %",
+    "quota_guard_add_step": "Add step",
+    "quota_guard_steps_hint": "Example: at 24 hours left keep 30%. Below the smallest step, that floor still applies.",
+    "quota_guard_invalid": "Check the guard steps: hours 0 to 8784, percent 0 to 100, no duplicate hours.",
+    "quota_guard_paused": "Paused by guard. Keeping {{floor}}% until reset.",
+    "quota_guard_active": "Guard on. Floor is {{floor}}% right now.",
+    "quota_guard_enabled": "Guard on. Waiting for quota data."
   },
   "antigravity_subscription": {
     "plan_unknown": "Unknown",
