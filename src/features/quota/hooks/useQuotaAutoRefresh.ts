@@ -1,6 +1,6 @@
 /**
- * Quietly reloads the quotas the burn forecast pools while the Quota page is
- * open, so the saved readings have enough points to measure a drain rate.
+ * Quietly reloads quotas while the Quota or Usage page is open, so the saved
+ * readings have enough points for the burn forecast and the quota-used column.
  *
  * Each load calls the provider's usage endpoint once per account, and Claude's
  * rate-limits it, so the refresh is careful about what it asks for:
