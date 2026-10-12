@@ -1,0 +1,635 @@
+@use '../../styles/mixins' as *;
+
+/* Same column template for the header and every row so they stay aligned. */
+$columns: 28px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1.1fr) minmax(150px, 0.9fr) 112px;
+
+.page {
+  position: relative;
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+/* ---------- Header (title and status line come from QuotaHeader.module.scss) ---------- */
+
+.segmented {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border-radius: $radius-full;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.segment {
+  padding: 5px 14px;
+  border: 0;
+  border-radius: $radius-full;
+  background: none;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.3;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    color var(--dur-hover) var(--ease-out-strong),
+    background-color var(--dur-hover) var(--ease-out-strong),
+    transform var(--dur-press) var(--ease-out-strong);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-hover);
+    outline-offset: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:active {
+      transform: none;
+    }
+  }
+}
+
+.segmentActive {
+  color: var(--text-primary);
+  font-weight: 650;
+  background: var(--floating-surface);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- KPI tiles (dashboard stat tiles) ---------- */
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: $spacing-md;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Phones keep two columns with smaller tiles, so the list starts sooner. */
+  @media (max-width: 460px) {
+    gap: $spacing-sm;
+  }
+}
+
+.statTile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: $spacing-lg;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
+  transition: border-color $transition-fast;
+
+  &::before {
+    content: '';
+    width: 28px;
+    height: 3px;
+    margin-bottom: 2px;
+    border-radius: $radius-full;
+    background: var(--tile-accent, var(--border-hover));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--border-hover);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.tone_good {
+  --tile-accent: var(--viz-success);
+}
+
+.tone_warning {
+  --tile-accent: var(--amber-color);
+}
+
+.tone_critical {
+  --tile-accent: var(--viz-failure);
+}
+
+.tone_idle {
+  --tile-accent: var(--text-quaternary);
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.statValue {
+  font-family: $font-mono;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  @include text-ellipsis;
+}
+
+@media (max-width: 460px) {
+  .statTile {
+    padding: $spacing-md;
+  }
+
+  .statValue {
+    font-size: 22px;
+  }
+
+  .statHint {
+    font-size: 11px;
+  }
+}
+
+.statValueMuted {
+  color: var(--text-tertiary);
+}
+
+.statHint {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-tertiary);
+}
+
+/* ---------- Ranked account list ---------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: clamp($spacing-lg, 2.4vw, 28px);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
+}
+
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $spacing-md;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.panelMeta {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--failure-badge-text);
+}
+
+.emptyNote {
+  margin: 0;
+  padding: $spacing-lg 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.colsHead,
+.row {
+  display: grid;
+  grid-template-columns: $columns;
+  gap: $spacing-lg;
+  align-items: center;
+  /* Rows bleed into the panel padding so the hover wash has room. */
+  margin: 0 (-$spacing-sm - 4px);
+  padding-left: $spacing-sm + 4px;
+  padding-right: $spacing-sm + 4px;
+}
+
+.colsHead {
+  padding-top: 4px;
+  padding-bottom: $spacing-sm + 4px;
+  border-bottom: 1px solid var(--border-color);
+  font-family: $font-mono;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-quaternary);
+  white-space: nowrap;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.tokensHead {
+  display: inline-flex;
+  align-items: center;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-tertiary);
+
+  i {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 5px;
+    border-radius: 2px;
+  }
+}
+
+/* Token split shades stay neutral: colour is reserved for success and failure. */
+.tokIn {
+  background: var(--text-secondary);
+}
+
+.tokOut {
+  background: var(--primary-color);
+}
+
+.tokCache {
+  background: var(--border-primary);
+}
+
+.row {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  transition: background-color var(--dur-hover) var(--ease-out-strong);
+
+  &:last-child {
+    border-bottom-color: transparent;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in srgb, var(--bg-tertiary) 55%, transparent);
+    }
+  }
+}
+
+.rowIdle .identity {
+  opacity: 0.7;
+}
+
+.rank {
+  font-family: $font-mono;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-quaternary);
+  font-variant-numeric: tabular-nums;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.nameLine {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.name {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-primary);
+  @include text-ellipsis;
+}
+
+.provider {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px;
+  border-radius: $radius-full;
+  background: var(--count-badge-bg);
+  color: var(--count-badge-text);
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+/* Brand pills: tinted fill, and text pulled toward the page's text colour so it
+ * stays readable on both dark and light themes. */
+.brandClaude,
+.brandCodex {
+  background: color-mix(in srgb, var(--brand) 16%, transparent);
+  color: color-mix(in srgb, var(--brand) 78%, var(--text-primary));
+}
+
+.brandClaude {
+  --brand: #d97757;
+}
+
+.brandCodex {
+  --brand: #4f8cff;
+}
+
+.providerLogo {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.providerIcon {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+}
+
+.detail {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  @include text-ellipsis;
+}
+
+.spanTwo {
+  grid-column: span 2;
+}
+
+.idleNote {
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.metricTop {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.metricTotal {
+  font-family: $font-mono;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.metricLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.metricSplit {
+  font-family: $font-mono;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.failBadge {
+  margin-left: auto;
+  padding: 0 $spacing-sm;
+  border-radius: $radius-full;
+  background: color-mix(in srgb, var(--viz-failure) 16%, transparent);
+  color: var(--failure-badge-text);
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.ratioBar,
+.tokenBar {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+}
+
+.tokenBar {
+  height: 4px;
+
+  span {
+    min-width: 3px;
+    border-radius: 2px;
+  }
+}
+
+.ratioSegment {
+  display: block;
+  min-width: 4px;
+  border-radius: 3px;
+}
+
+.splitSuccess {
+  background: var(--viz-success);
+}
+
+.splitFailure {
+  background: var(--viz-failure);
+}
+
+/* ---------- Quota used ---------- */
+
+.quota {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.quotaPill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  padding: 2px 10px;
+  border-radius: $radius-full;
+  background: var(--bg-tertiary);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+
+  b {
+    font-family: $font-mono;
+    font-size: 12px;
+    font-weight: 650;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.quotaPillQuiet b {
+  color: var(--text-tertiary);
+}
+
+.quotaMuted,
+.quotaHint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.quotaHint {
+  font-size: 11px;
+  color: var(--text-quaternary);
+}
+
+/* ---------- Activity ---------- */
+
+.activity {
+  min-width: 0;
+}
+
+.spark {
+  height: 28px;
+}
+
+/* ---------- Narrow screens: each row becomes a small card ----------
+ * Name across the top, requests beside the sparkline, then tokens, then quota.
+ * Idle rows drop the sparkline and keep just the note and quota. */
+
+@media (max-width: 900px) {
+  /* Full width puts the picker on its own line under the title. */
+  .segmented {
+    width: 100%;
+  }
+
+  .segment {
+    flex: 1;
+    padding: 7px 8px;
+    font-size: 13px;
+  }
+
+  .row {
+    grid-template-columns: 22px minmax(0, 1fr) minmax(88px, 34%);
+    grid-template-areas:
+      'rank id id'
+      '. requests spark'
+      '. tokens tokens'
+      '. quota quota';
+    column-gap: $spacing-md;
+    row-gap: $spacing-md;
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-lg;
+  }
+
+  .rowIdle {
+    grid-template-areas:
+      'rank id id'
+      '. idle idle'
+      '. quota quota';
+    row-gap: 6px;
+
+    .activity {
+      display: none;
+    }
+  }
+
+  .rank {
+    grid-area: rank;
+  }
+
+  .identity {
+    grid-area: id;
+  }
+
+  .metricRequests {
+    grid-area: requests;
+  }
+
+  .metricTokens {
+    grid-area: tokens;
+  }
+
+  .idleNote {
+    grid-area: idle;
+  }
+
+  .activity {
+    grid-area: spark;
+    align-self: center;
+  }
+
+  .metricTop {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .failBadge {
+    margin-left: 0;
+  }
+
+  .quota {
+    grid-area: quota;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+}
+
+.footnote {
+  margin: 0;
+  font-family: $font-mono;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text-quaternary);
+}

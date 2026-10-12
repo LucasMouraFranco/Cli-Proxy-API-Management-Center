@@ -8,6 +8,8 @@ export interface TokenUsageBucket {
   /** Bucket start, epoch milliseconds. */
   time: number;
   requests: number;
+  /** Failed requests among `requests`. */
+  failed: number;
   uncachedInputTokens: number;
   outputTokens: number;
   cacheReadTokens: number;
@@ -25,6 +27,8 @@ export interface CredentialTokenUsage {
   lastSeen: number | null;
   /** Recent ten-minute buckets, oldest first. */
   recent: TokenUsageBucket[];
+  /** Hourly buckets for the last 7 days, oldest first. Only hours with requests are listed. */
+  hourly: TokenUsageBucket[];
 }
 
 export interface CacheWriteSpike {
@@ -67,6 +71,7 @@ const normalizeBucket = (value: unknown): TokenUsageBucket | null => {
   return {
     time,
     requests: readCount(value, 'requests'),
+    failed: readCount(value, 'failed'),
     uncachedInputTokens: readCount(value, 'uncached_input_tokens', 'uncachedInputTokens'),
     outputTokens: readCount(value, 'output_tokens', 'outputTokens'),
     cacheReadTokens: readCount(value, 'cache_read_tokens', 'cacheReadTokens'),
@@ -74,15 +79,19 @@ const normalizeBucket = (value: unknown): TokenUsageBucket | null => {
   };
 };
 
-/** Normalizes the backend `token_usage` object; returns undefined when it is absent or empty. */
-export const normalizeCredentialTokenUsage = (value: unknown): CredentialTokenUsage | undefined => {
-  if (!isRecord(value)) return undefined;
-  const recent = Array.isArray(value.recent)
-    ? value.recent
+const normalizeBuckets = (value: unknown): TokenUsageBucket[] =>
+  Array.isArray(value)
+    ? value
         .map(normalizeBucket)
         .filter((bucket): bucket is TokenUsageBucket => bucket !== null)
         .sort((a, b) => a.time - b.time)
     : [];
+
+/** Normalizes the backend `token_usage` object; returns undefined when it is absent or empty. */
+export const normalizeCredentialTokenUsage = (value: unknown): CredentialTokenUsage | undefined => {
+  if (!isRecord(value)) return undefined;
+  const recent = normalizeBuckets(value.recent);
+  const hourly = normalizeBuckets(value.hourly);
   const usage: CredentialTokenUsage = {
     requests: readCount(value, 'requests'),
     uncachedInputTokens: readCount(value, 'uncached_input_tokens', 'uncachedInputTokens'),
@@ -92,8 +101,9 @@ export const normalizeCredentialTokenUsage = (value: unknown): CredentialTokenUs
     since: readTime(value.since),
     lastSeen: readTime(value.last_seen ?? value.lastSeen),
     recent,
+    hourly,
   };
-  return usage.requests > 0 || recent.length > 0 ? usage : undefined;
+  return usage.requests > 0 || recent.length > 0 || hourly.length > 0 ? usage : undefined;
 };
 
 /** Share of input tokens served from the prompt cache, or null without input. */

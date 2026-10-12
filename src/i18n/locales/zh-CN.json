@@ -107,7 +107,8 @@
     "plugin_store": "插件商店",
     "config_management": "配置面板",
     "logs": "日志查看",
-    "system_info": "中心信息"
+    "system_info": "中心信息",
+    "usage": "用量"
   },
   "nav_groups": {
     "operate": "运行",
@@ -127,7 +128,8 @@
     "plugin_store": "发现并安装插件",
     "logs": "请求追踪与排查",
     "config_management": "网关基础配置",
-    "system_info": "运行与诊断信息"
+    "system_info": "运行与诊断信息",
+    "usage": "按账号查看请求、Token 与额度"
   },
   "dashboard": {
     "hero_verdict_good": "运行平稳",
@@ -2263,5 +2265,51 @@
     "bar_title": "{{time}}：缓存写入 {{tokens}} token",
     "spike": "{{time}} 缓存写入激增：{{tokens}} token，约为平时的 {{ratio}} 倍。可能有会话切换到了这个账号。",
     "spike_idle": "{{time}} 缓存写入激增：空闲账号写入 {{tokens}} token。可能有会话切换到了这个账号。"
+  },
+  "usage_page": {
+    "title": "按账号查看用量",
+    "meta_accounts": "{{count}} 个账号",
+    "meta_active": "{{count}} 个活跃",
+    "period_aria": "时间范围",
+    "period_1h": "1 小时",
+    "period_3h": "3 小时",
+    "period_today": "今天",
+    "period_7d": "7 天",
+    "period_label_1h": "最近 1 小时",
+    "period_label_3h": "最近 3 小时",
+    "period_label_today": "今天",
+    "period_label_7d": "最近 7 天",
+    "stats_aria": "用量汇总",
+    "stat_requests": "请求",
+    "stat_requests_hint": "成功率 {{rate}} · 失败 {{failed}}",
+    "stat_requests_empty": "该时段内没有请求",
+    "stat_tokens": "Token",
+    "stat_tokens_hint": "输入 {{input}} · 输出 {{output}} · 缓存 {{cache}}",
+    "stat_accounts": "活跃账号",
+    "stat_accounts_hint": "{{count}} 个空闲",
+    "stat_busiest": "最繁忙账号",
+    "stat_busiest_hint": "占请求的 {{share}}",
+    "stat_busiest_none": "暂无流量",
+    "list_title": "账号",
+    "list_meta": "按请求数排序 · {{period}}",
+    "col_rank": "排名",
+    "col_account": "账号",
+    "col_requests": "请求",
+    "col_tokens": "Token",
+    "col_quota": "已用额度",
+    "col_activity": "活动",
+    "legend_in": "输入",
+    "legend_out": "输出",
+    "legend_cache": "缓存",
+    "share": "占流量 {{share}}",
+    "failed_badge": "失败 {{count}}",
+    "idle": "该时段内没有请求",
+    "quota_not_tracked": "不追踪",
+    "quota_unavailable": "额度不可用",
+    "quota_collecting": "正在收集读数",
+    "quota_since": "自 {{time}} 起",
+    "activity_aria": "{{name}} 的请求趋势",
+    "empty": "没有启用的账号。请在认证文件页面添加。",
+    "footnote": "请求与 Token 数据来自代理：最近 3 小时按 10 分钟统计，7 天内按小时统计，重启后仍保留。已用额度根据本浏览器在应用打开时保存的额度读数计算，因此可能从时段中途开始。"
   }
 }

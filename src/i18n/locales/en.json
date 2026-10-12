@@ -107,7 +107,8 @@
     "plugin_store": "Plugin Store",
     "config_management": "Config Panel",
     "logs": "Logs Viewer",
-    "system_info": "Management Center Info"
+    "system_info": "Management Center Info",
+    "usage": "Usage"
   },
   "nav_groups": {
     "operate": "Operate",
@@ -127,7 +128,8 @@
     "plugin_store": "Discover & install plugins",
     "logs": "Request tracing",
     "config_management": "Gateway configuration",
-    "system_info": "Runtime & diagnostics"
+    "system_info": "Runtime & diagnostics",
+    "usage": "Requests, tokens & quota by account"
   },
   "dashboard": {
     "hero_verdict_good": "All systems steady",
@@ -2266,5 +2268,51 @@
     "bar_title": "{{time}}: {{tokens}} cache-write tokens",
     "spike": "Cache-write spike at {{time}}: {{tokens}} tokens, about {{ratio}}× the usual. A conversation probably moved to this account.",
     "spike_idle": "Cache-write spike at {{time}}: {{tokens}} tokens on a quiet account. A conversation probably moved to this account."
+  },
+  "usage_page": {
+    "title": "Usage by account",
+    "meta_accounts": "{{count}} accounts",
+    "meta_active": "{{count}} active",
+    "period_aria": "Period",
+    "period_1h": "1h",
+    "period_3h": "3h",
+    "period_today": "Today",
+    "period_7d": "7d",
+    "period_label_1h": "last hour",
+    "period_label_3h": "last 3 hours",
+    "period_label_today": "today",
+    "period_label_7d": "last 7 days",
+    "stats_aria": "Usage totals",
+    "stat_requests": "Requests",
+    "stat_requests_hint": "{{rate}} success · {{failed}} failed",
+    "stat_requests_empty": "No requests in this period",
+    "stat_tokens": "Tokens",
+    "stat_tokens_hint": "{{input}} in · {{output}} out · {{cache}} cached",
+    "stat_accounts": "Accounts active",
+    "stat_accounts_hint": "{{count}} idle",
+    "stat_busiest": "Busiest account",
+    "stat_busiest_hint": "{{share}} of requests",
+    "stat_busiest_none": "No traffic yet",
+    "list_title": "Accounts",
+    "list_meta": "Ranked by requests · {{period}}",
+    "col_rank": "Rank",
+    "col_account": "Account",
+    "col_requests": "Requests",
+    "col_tokens": "Tokens",
+    "col_quota": "Quota used",
+    "col_activity": "Activity",
+    "legend_in": "in",
+    "legend_out": "out",
+    "legend_cache": "cache",
+    "share": "{{share}} of traffic",
+    "failed_badge": "{{count}} failed",
+    "idle": "No requests in this period",
+    "quota_not_tracked": "Not tracked",
+    "quota_unavailable": "Quota unavailable",
+    "quota_collecting": "Collecting readings",
+    "quota_since": "since {{time}}",
+    "activity_aria": "Requests over time for {{name}}",
+    "empty": "No active accounts. Add one on the Auth Files page.",
+    "footnote": "Requests and tokens come from the proxy. It keeps 10-minute detail for the last 3 hours and hourly history for 7 days, saved across restarts. Quota used is measured from quota readings this browser saves while the app is open, so it can start partway through a period."
   }
 }
