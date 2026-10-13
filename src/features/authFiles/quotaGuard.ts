@@ -68,6 +68,9 @@ export function parseQuotaGuard(value: unknown): QuotaGuardConfig | null {
     steps.push({ hours, minRemaining });
   }
   steps.sort((a, b) => b.hours - a.hours);
+  for (let i = 1; i < steps.length; i++) {
+    if (steps[i].minRemaining > steps[i - 1].minRemaining) return null;
+  }
   return { enabled, steps };
 }
 
@@ -94,6 +97,12 @@ export function quotaGuardError(draft?: QuotaGuardDraft): QuotaGuardError | null
     }
     if (seen.has(step.hours)) return 'auth_files.quota_guard_invalid';
     seen.add(step.hours);
+  }
+  const sorted = [...draft.steps].sort((a, b) => b.hours - a.hours);
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i].minRemaining > sorted[i - 1].minRemaining) {
+      return 'auth_files.quota_guard_invalid';
+    }
   }
   return null;
 }
